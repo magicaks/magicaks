@@ -1,7 +1,0 @@
-namespace: flux
-resources:
-  - ns.yaml
-bases:
- - github.com/fluxcd/flux/deploy
-patchesStrategicMerge:
-  - patch.yaml

@@ -26,7 +26,7 @@ variable location {
 }
 
 variable log_analytics_workspace_name {
-    default = "k8sLogAnalyticsWorkspaceName"
+    default = "k8sLogAnalyticsWorkspace"
 }
 
 # refer https://azure.microsoft.com/global-infrastructure/services/?products=monitor for log analytics available regions
