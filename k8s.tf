@@ -65,7 +65,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         type = "VirtualMachineScaleSets"
         enable_auto_scaling = true
         vnet_subnet_id = "${azurerm_subnet.k8s-subnet.id}"
-        min_count = 1
+        min_count = 3
         max_count = 5
     }
 
