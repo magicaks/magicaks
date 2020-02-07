@@ -20,3 +20,11 @@ module "aks" {
     client_id = var.client_id
     client_secret = var.client_secret
 }
+
+module flux {
+  source = "./flux"
+  k8s_rg_name = module.aks.rgname
+  cluster_name = module.aks.name
+  ghuser = var.ghuser
+  flux_recreate = true
+}

@@ -20,3 +20,11 @@ variable k8s_rg_name {
 variable location {
     default = "West Europe"
 }
+
+variable ghuser {
+    default = "sachinkundu"
+}
+
+variable flux_recreate {
+    default = false
+}
