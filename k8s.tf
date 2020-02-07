@@ -56,16 +56,14 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         }
     }
 
-    agent_pool_profile {
+    default_node_pool {
         name            = "agentpool"
-        count           = "${var.agent_count}"
         vm_size         = "Standard_DS2_v2"
-        os_type         = "Linux"
         os_disk_size_gb = 30
         type = "VirtualMachineScaleSets"
         enable_auto_scaling = true
         vnet_subnet_id = "${azurerm_subnet.k8s-subnet.id}"
-        min_count = 3
+        min_count = 1
         max_count = 5
     }
 

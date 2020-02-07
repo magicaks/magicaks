@@ -4,5 +4,8 @@ provider "azurerm" {
 
 terraform {
   backend "azurerm" {
+    container_name = "tfstate"
+    key = "magicaks"
+    storage_account_name = "longlasting"
   }
 }
