@@ -25,6 +25,14 @@ variable ghuser {
     default = "sachinkundu"
 }
 
+variable k8s_manifest_repo {
+
+}
+
+variable pat {
+    
+}
+
 variable flux_recreate {
     default = false
 }

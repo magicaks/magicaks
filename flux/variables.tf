@@ -10,6 +10,14 @@ variable ghuser {
 
 }
 
+variable repo {
+
+}
+
+variable pat {
+    
+}
+
 variable flux_recreate {
     default = false
 }

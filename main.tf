@@ -26,5 +26,7 @@ module flux {
   k8s_rg_name = module.aks.rgname
   cluster_name = module.aks.name
   ghuser = var.ghuser
+  repo = var.k8s_manifest_repo
+  pat = var.pat
   flux_recreate = true
 }
