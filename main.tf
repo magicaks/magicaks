@@ -30,3 +30,18 @@ module flux {
   pat = var.pat
   flux_recreate = true
 }
+
+resource "azurerm_eventgrid_domain" "eventgrid" {
+  name                = "magicaks-eventgrid"
+  location            = var.location
+  resource_group_name = var.k8s_rg_name
+
+  tags = {
+    environment = "Devlopment"
+  }
+}
+
+module "expose_event_grid" {
+  source = "./expose_event_grid_in_k8s"
+  endpoint = azurerm_eventgrid_domain.eventgrid.endpoint
+}
