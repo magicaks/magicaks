@@ -1,3 +1,3 @@
-output "eventgrid_endpoint" {
-    value = "${azurerm_eventgrid_domain.eventgrid.endpoint}"
+output "servicebus_id" {
+    value = "${azurerm_servicebus_namespace.servicebus.id}"
 }

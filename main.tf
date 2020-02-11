@@ -15,7 +15,7 @@ module "aks" {
     agent_count = var.agent_count
     dns_prefix = var.dns_prefix
     cluster_name = var.cluster_name
-    resource_group_name = var.k8s_rg_name
+    resource_group_name = var.resource_group_name
     location = var.location
     client_id = var.client_id
     client_secret = var.client_secret
@@ -23,7 +23,7 @@ module "aks" {
 
 module flux {
   source = "./flux"
-  k8s_rg_name = module.aks.rgname
+  resource_group_name = module.aks.rgname
   cluster_name = module.aks.name
   ghuser = var.ghuser
   repo = var.k8s_manifest_repo
@@ -31,17 +31,14 @@ module flux {
   flux_recreate = true
 }
 
-resource "azurerm_eventgrid_domain" "eventgrid" {
-  name                = "magicaks-eventgrid"
+resource "azurerm_servicebus_namespace" "servicebus" {
+  name                = "${var.cluster_name}-servicebus"
   location            = var.location
-  resource_group_name = var.k8s_rg_name
+  resource_group_name = var.resource_group_name
+  sku                 = "Standard"
 
   tags = {
-    environment = "Devlopment"
+    source = "terraform"
+    environment = "Development"
   }
-}
-
-module "expose_event_grid" {
-  source = "./expose_event_grid_in_k8s"
-  endpoint = azurerm_eventgrid_domain.eventgrid.endpoint
 }

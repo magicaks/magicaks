@@ -1,4 +1,4 @@
-variable k8s_rg_name {
+variable resource_group_name {
     default = "k8s"
 }
 
