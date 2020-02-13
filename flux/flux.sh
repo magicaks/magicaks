@@ -19,6 +19,7 @@ fluxctl install \
 --git-email=${GHUSER}@users.noreply.github.com \
 --git-url=git@github.com:${GHUSER}/${REPO}.git \
 --git-path=dev \
+--registry-disable-scanning \
 --namespace=flux | kubectl apply -f -
 
 kubectl -n flux rollout status deployment/flux -w

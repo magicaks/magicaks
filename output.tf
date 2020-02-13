@@ -1,3 +1,3 @@
-output "servicebus_id" {
-    value = "${azurerm_servicebus_namespace.servicebus.id}"
+output "keyvault_uri" {
+    value = "${azurerm_key_vault.keyvault.vault_uri}"
 }

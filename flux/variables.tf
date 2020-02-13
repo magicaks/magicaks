@@ -6,17 +6,11 @@ variable cluster_name {
     default = "k8s"
 }
 
-variable ghuser {
+variable ghuser {}
 
-}
+variable repo {}
 
-variable repo {
-
-}
-
-variable pat {
-    
-}
+variable pat {}
 
 variable flux_recreate {
     default = false

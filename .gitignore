@@ -3,3 +3,5 @@ out.plan
 .terraform
 *.tfvars
 .env
+Dockerfile
+ubuntu.yaml

@@ -1,5 +1,6 @@
 variable "client_id" {}
 variable "client_secret" {}
+variable tenant_id {}
 
 variable "agent_count" {
     default = 1
@@ -25,13 +26,9 @@ variable ghuser {
     default = "sachinkundu"
 }
 
-variable k8s_manifest_repo {
+variable k8s_manifest_repo {}
 
-}
-
-variable pat {
-    
-}
+variable pat {}
 
 variable flux_recreate {
     default = false

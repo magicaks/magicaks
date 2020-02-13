@@ -40,6 +40,11 @@ resource "azurerm_subnet" "k8s-subnet" {
   resource_group_name  = azurerm_resource_group.k8s.name
   address_prefix       = "10.1.0.0/24"
   virtual_network_name = azurerm_virtual_network.k8s-vnet.name
+  service_endpoints = ["Microsoft.KeyVault", "Microsoft.ServiceBus", 
+                       "Microsoft.Sql", "Microsoft.ContainerRegistry",
+                       "Microsoft.Storage"]
+  # Why do I have to always add this for the second run?
+  route_table_id = "/subscriptions/b6a69b21-5dea-4475-9cd5-e9f2f8eb1e27/resourceGroups/MC_magicaks_magicaks_westeurope/providers/Microsoft.Network/routeTables/aks-agentpool-28192664-routetable"
 }
 
 resource "azurerm_kubernetes_cluster" "k8s" {
