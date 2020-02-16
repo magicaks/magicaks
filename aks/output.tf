@@ -1,7 +1,3 @@
-output "rgname" {
-    value = "${azurerm_resource_group.k8s.name}"
-}
-
 output "name" {
     value = "${azurerm_kubernetes_cluster.k8s.name}"
 }

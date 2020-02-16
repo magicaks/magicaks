@@ -10,12 +10,17 @@ terraform {
   }
 }
 
+resource "azurerm_resource_group" "rg" {
+    name     = var.resource_group_name
+    location = var.location
+}
+
 module "aks" {
     source = "./aks"
     agent_count = var.agent_count
     dns_prefix = var.dns_prefix
     cluster_name = var.cluster_name
-    resource_group_name = var.resource_group_name
+    resource_group_name = azurerm_resource_group.rg.name
     location = var.location
     client_id = var.client_id
     client_secret = var.client_secret
@@ -23,7 +28,7 @@ module "aks" {
 
 module flux {
   source = "./flux"
-  resource_group_name = module.aks.rgname
+  resource_group_name = azurerm_resource_group.rg.name
   cluster_name = module.aks.name
   ghuser = var.ghuser
   repo = var.k8s_manifest_repo
@@ -31,23 +36,11 @@ module flux {
   flux_recreate = var.flux_recreate
 }
 
-resource "azurerm_servicebus_namespace" "servicebus" {
-  name                = "${var.cluster_name}-servicebus"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  sku                 = "Standard"
-
-  tags = {
-    source = "terraform"
-    environment = "Development"
-  }
-}
-
 resource "azurerm_key_vault" "keyvault" {
   name                        = "${var.cluster_name}-keyvault"
   location                    = var.location
   tenant_id                   = var.tenant_id
-  resource_group_name         = var.resource_group_name
+  resource_group_name         = azurerm_resource_group.rg.name
   
   enabled_for_deployment          = true
   enabled_for_disk_encryption     = true
@@ -99,12 +92,21 @@ resource "azurerm_key_vault" "keyvault" {
   sku_name = "standard"
 }
 
+module "servicebus" {  
+  source = "./servicebus"
+  resource_group_name = azurerm_resource_group.rg.name
+  cluster_name = module.aks.name
+  location = var.location
+  keyvault_id = azurerm_key_vault.keyvault.id
+  keyvault_name = azurerm_key_vault.keyvault.name
+}
+
 resource "azurerm_key_vault_secret" "sbconnectionstring" {
-  name         = "servicebus-connectionstring"
-  value        = "${azurerm_servicebus_namespace.servicebus.default_primary_connection_string}"
-  key_vault_id = "${azurerm_key_vault.keyvault.id}"
+  name         = "${module.aks.name}-servicebus-connectionstring"
+  value        = module.servicebus.primary_connection_string
+  key_vault_id = azurerm_key_vault.keyvault.id
 
   provisioner "local-exec" {
-    command = "./expose-secret.sh ${self.name} ${azurerm_key_vault.keyvault.name}"
+    command = "${path.cwd}/utils/expose-secret.sh ${self.name} ${azurerm_key_vault.keyvault.name}"
   }
 }
