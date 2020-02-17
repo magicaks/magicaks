@@ -1,0 +1,37 @@
+name: magicaks
+subcomponents:
+
+# Install kured - Kubernetes reboot daemon
+- name: kured
+  method: local
+  type: static
+  path: "raw/kured"
+  source: "."
+
+# Enable reading logs from azure monitor.
+- name: log-reader
+  method: local
+  path: "raw/logs"
+  source: "."
+  type: static
+
+# Install psp policies.
+- name: psp
+  method: local
+  path: "raw/psp"
+  source: "."
+  type: static
+
+# Install akv2k8s - Key Vault access for AKS.
+- name: akv2k8s-kvcontroller
+  method: helm
+  source: http://charts.spvapi.no
+  path: azure-key-vault-controller
+  type: helm
+
+# Bind akv2k8 to use restricted psp.
+- name: akv2k8spsp
+  method: local
+  path: "raw/akv2k8spsp"
+  source: "."
+  type: static
