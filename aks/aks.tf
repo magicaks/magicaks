@@ -97,6 +97,10 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         enabled                    = true
         log_analytics_workspace_id = azurerm_log_analytics_workspace.k8s.id
         }
+
+        azure_policy {
+            enabled = true
+        }
     }
 
     role_based_access_control {
@@ -115,4 +119,8 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     kubernetes_version = "1.17.0"
 
     node_resource_group = "${var.resource_group_name}-node-rg"
+
+    provisioner "local-exec" {
+        command = "${path.cwd}/aks/azurepolicy.sh ${self.name} ${self.resource_group_name}"
+  }
 }
