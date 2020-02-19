@@ -46,5 +46,4 @@ jobs:
         ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN }}
         COMMIT_MESSAGE: ${{ env.commitmsg }}
         REPO: https://github.com/sachinkundu/k8smanifests.git
-        BRANCH_NAME: ${{ github.ref }}
         FAB_ENVS: dev
