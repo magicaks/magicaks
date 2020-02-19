@@ -5,6 +5,7 @@ on:
     paths:
     - 'fabrikate-defs/**'
     - '!fabrikate-defs/README.md'
+    - '.github/workflows/generate-manifests-gh.yaml'
 
 jobs:
   build:
