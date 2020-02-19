@@ -38,12 +38,13 @@ jobs:
       run: |
         curl $BEDROCK_BUILD_SCRIPT > build.sh
         chmod +x ./build.sh
+        ls -al
       env:
         BEDROCK_BUILD_SCRIPT: https://raw.githubusercontent.com/Microsoft/bedrock/master/gitops/azure-devops/build.sh
 
     - name: Fabrikate defs -> k8s manifests
       run: |
-        ./build.sh
+        ./build.sh fabrikate-defs
       env:
         ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN }}
         COMMIT_MESSAGE: ${{ env.commitmsg }}
