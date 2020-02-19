@@ -30,6 +30,10 @@ jobs:
         chmod 700 get_helm.sh
         ./get_helm.sh
 
+    - name: Change directory to fabrikate-defs
+      run: |
+        cd fabrikate-defs
+
     - name: Download Bedrock orchestration script
       run: |
         curl $BEDROCK_BUILD_SCRIPT > build.sh
