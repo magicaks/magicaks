@@ -30,21 +30,18 @@ jobs:
         chmod 700 get_helm.sh
         ./get_helm.sh
 
-    - name: Change directory to fabrikate-defs
-      run: |
-        cd fabrikate-defs
-
     - name: Download Bedrock orchestration script
       run: |
+        cd fabrikate-defs
         curl $BEDROCK_BUILD_SCRIPT > build.sh
         chmod +x ./build.sh
-        ls -al
       env:
         BEDROCK_BUILD_SCRIPT: https://raw.githubusercontent.com/Microsoft/bedrock/master/gitops/azure-devops/build.sh
 
     - name: Fabrikate defs -> k8s manifests
       run: |
-        ./build.sh fabrikate-defs
+        cd fabrikate-defs
+        ./build.sh
       env:
         ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN }}
         COMMIT_MESSAGE: ${{ env.commitmsg }}
