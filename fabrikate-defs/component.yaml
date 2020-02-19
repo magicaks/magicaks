@@ -1,3 +1,4 @@
+# Install a basic set of components required to make a functional cluster.
 name: magicaks
 subcomponents:
 
