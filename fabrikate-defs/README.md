@@ -5,7 +5,7 @@ manifests for flux
 
 This folder contains fabrikate specific configs which are used to generate kubernetes manifests. 
 
-There is a githubs actions file in ../.github/workflows/generate-manifests-gh.yaml which runs fabrikate to generate manifests which are then applied to kubenetes manifests git repo.
+There is a github actions [file](https://github.com/sachinkundu/akstf/blob/master/.github/workflows/generate-manifests-gh.yaml) which runs fabrikate to generate manifests which are then applied to kubenetes manifests git repo.
 
 Flux(gitOps) is setup to track kubernetes manifest repo and any changes made to fabrikate definitions will eventually reflect in the cluster.
 
