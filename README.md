@@ -59,6 +59,8 @@ Instead of writing k8s manifests directly we use Fabrikate HLD to write the conf
 3. Azure KeyVault
 4. akv2k8s operator installed to provide seamsless access to keyvault secrets.
 5. Service bus integrated and primary connection string stored in KeyVault and exposed in cluster as K8s secret.
+6. Pod security policies are enabled and a restricted policy added.
+7. Azure Policy is enabled on the cluster. No policies are assigned right now.
 
 ## What is upcoming
 Check open issues at [Github Issues](https://github.com/sachinkundu/akstf/issues)
