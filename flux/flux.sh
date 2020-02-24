@@ -6,7 +6,7 @@ REPO=$4
 PAT=$5
 
 # Get kubecredentials
-az aks get-credentials -g ${RGNAME} -n ${CLUSTERNAME} --overwrite
+az aks get-credentials -g ${RGNAME} -n ${CLUSTERNAME} --admin --overwrite
 
 # Set the right context
 kubectl config set-context ${CLUSTERNAME}
