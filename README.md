@@ -82,6 +82,8 @@ export ARM_ACCESS_KEY=
 4. akv2k8s operator installed to provide seamsless access to keyvault secrets.
 5. Service bus integrated and primary connection string stored in KeyVault and exposed in cluster as K8s secret.
 6. Integration with Azure Active Directory for K8s RBAC.
+7. Pod security policies are enabled and a restricted policy added.
+8. Azure Policy is enabled on the cluster. No policies are assigned right now.
 
 ## What is upcoming
 Check open issues at [Github Issues](https://github.com/sachinkundu/akstf/issues)
