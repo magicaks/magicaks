@@ -36,14 +36,36 @@ Instead of writing k8s manifests directly we use Fabrikate HLD to write the conf
 
 ## How to use this repo
 
-1. Extract the folder ``fabirkate-defs`` and push these files into a new repo called fabrikate-defs. Make sure to read the README.md files in that folder to do the configs required to set up AAD and RBAC setup.
-2. Make a new repo called k8smanifests.
-3. Setup github actions pipeline using ``generate-manifests-gh.yaml`` as the sample and use the above repo as the repo to which to write the generated k8s manifests.
-4. Fil the values in .env and run ``source .env``
-5. Make your choices in ``variables.tf``
-5. Run ``terraform init``
-6. Run ``terraform plan`` to check the execution plan
-7. Run ``terraform apply`` to instantiate the automation run. It will take sometime to bring things online but eventually you should be able to see your workload coming up including all intergrations.
+### One time setup
+
+These steps need to be done once each time a new project is started.
+
+* Generate AAD server and client applications by running the file ``utils/create-rbac-apps.sh``. Please notes that this script can only be run by owner or the active directory. You can use the same credentials for all projects so this is not needed per project but once for each Active Directory used.
+* Extract the folder ``fabirkate-defs`` and push these files into a new repo called fabrikate-defs. Make sure to read README.md in that folder to do the configs required to set up AAD and RBAC setup.
+* Make a new repo called k8smanifests. This will be your k8s manifests tracked by flux gitOps controller.
+* Setup github actions pipeline using ``.github/workflows/generate-manifests-gh.yaml`` as the sample and use the above repo as the repo to write the generated k8s manifests.
+* Make a file called .env and put these values in it and fill those with suitable values.
+```
+# Service principal used for creating cluster.
+export TF_VAR_client_secret=
+export TF_VAR_client_id=
+# Github personal access token
+export TF_VAR_pat=
+export TF_VAR_tenant_id=
+# Azure AAD server application secret. 
+export TF_VAR_aad_server_app_secret=
+export ARM_SUBSCRIPTION_ID=
+export ARM_TENANT_ID=$TF_VAR_tenant_id
+export ARM_CLIENT_SECRET=$TF_VAR_client_secret
+export ARM_CLIENT_ID=$TF_VAR_client_id
+# Storage access key where the terraform state information is to be stored.
+export ARM_ACCESS_KEY=
+```
+* Run ``source .env``
+* Make your choices in ``variables.tf``
+* Run ``terraform init``
+* Run ``terraform plan`` to check the execution plan
+* Run ``terraform apply`` to instantiate the automation run. It will take sometime to bring things online but eventually you should be able to see your workload coming up including all intergrations.
 
 ## What all is installed right now?
 
@@ -59,6 +81,7 @@ Instead of writing k8s manifests directly we use Fabrikate HLD to write the conf
 3. Azure KeyVault
 4. akv2k8s operator installed to provide seamsless access to keyvault secrets.
 5. Service bus integrated and primary connection string stored in KeyVault and exposed in cluster as K8s secret.
+6. Integration with Azure Active Directory for K8s RBAC.
 
 ## What is upcoming
 Check open issues at [Github Issues](https://github.com/sachinkundu/akstf/issues)

@@ -104,9 +104,14 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     }
 
     role_based_access_control {
+        azure_active_directory {
+            client_app_id     = var.aad_client_appid
+            server_app_id     = var.aad_server_appid
+            server_app_secret = var.aad_server_app_secret
+            tenant_id         = var.aad_tenant_id
+        }
         enabled = true
-    }
-    
+    }    
     network_profile {
         network_plugin = "kubenet"
     }
