@@ -33,3 +33,8 @@ variable pat {}
 variable flux_recreate {
     default = false
 }
+
+variable "aad_client_appid" { }
+variable "aad_server_appid" { }
+variable "aad_server_app_secret" { }
+variable "aad_tenant_id" { }

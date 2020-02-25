@@ -24,6 +24,10 @@ module "aks" {
     location = var.location
     client_id = var.client_id
     client_secret = var.client_secret
+    aad_client_appid = var.aad_client_appid
+    aad_server_appid = var.aad_server_appid
+    aad_server_app_secret = var.aad_server_app_secret
+    aad_tenant_id = var.aad_tenant_id
 }
 
 module flux {
