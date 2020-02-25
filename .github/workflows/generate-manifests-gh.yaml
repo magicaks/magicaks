@@ -23,25 +23,20 @@ jobs:
     - name: get commit message
       run: |
           echo ::set-env name=commitmsg::$(git log --format=%B -n 1 ${{ github.event.after }})
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r fabrikate-defs/requirements.txt
     
-    - name: Install Helm
-      run: |
-        curl -LO https://git.io/get_helm.sh
-        chmod 700 get_helm.sh
-        ./get_helm.sh
-
-    - name: Download Bedrock orchestration script
-      run: |
-        cd fabrikate-defs
-        curl $BEDROCK_BUILD_SCRIPT > build.sh
-        chmod +x ./build.sh
-      env:
-        BEDROCK_BUILD_SCRIPT: https://raw.githubusercontent.com/Microsoft/bedrock/master/gitops/azure-devops/build.sh
-
     - name: Fabrikate defs -> k8s manifests
       run: |
         cd fabrikate-defs
-        ./build.sh
+        ./build.sh ./bin/
       env:
         ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN }}
         COMMIT_MESSAGE: ${{ env.commitmsg }}

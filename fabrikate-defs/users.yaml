@@ -1,0 +1,20 @@
+---
+clusters:
+- dev:
+    users:
+    - name: Sachin Kundu
+      email: sakundu@microsoft.com
+    groups:
+    - name: devs
+      role: devs
+    - name: admins
+      role: cluster-admin
+    apps:
+    - name: app1
+
+- prod:
+    groups:
+    - name: admins
+      role: cluster-admin
+    apps:
+    - name: app1
