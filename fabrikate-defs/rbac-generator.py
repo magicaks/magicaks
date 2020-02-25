@@ -23,7 +23,9 @@ with open('users.yaml') as f:
                 username = ''.join(user['name'].split(' ')).lower()
                 user_template = env.get_template('user.tmpl')
                 output = p / f'{username}.yaml'
-                output.write_text(user_template.render(name=username, email=user['email']))
+                output.write_text(user_template.render(name=username, 
+                                                       email=user['email'],
+                                                       id=user['id']))
             for group in working_cluster.get('groups', []):
                 pass
             for app in working_cluster.get('apps', []):

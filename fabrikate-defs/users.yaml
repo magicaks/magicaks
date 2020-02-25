@@ -4,6 +4,7 @@ clusters:
     users:
     - name: Sachin Kundu
       email: sakundu@microsoft.com
+      id: e82dcb97-3150-49aa-b1e4-863eb82768a4
     groups:
     - name: devs
       role: devs
