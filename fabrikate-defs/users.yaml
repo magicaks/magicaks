@@ -6,9 +6,9 @@ clusters:
       email: sakundu@microsoft.com
       id: e82dcb97-3150-49aa-b1e4-863eb82768a4
     groups:
-    - name: devs
+    - id: 1234
       role: devs
-    - name: admins
+    - id: 2345
       role: cluster-admin
     apps:
     - name: app1
