@@ -5,11 +5,12 @@ metadata:
   name: {{ name }}
   labels:
     name: {{ name }}
+    created-by: {{ email }}
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: {{ name }}_ns-full-access
+  name: {{ name }}_ns-full-access 
   namespace: {{ name }}
 rules:
 - apiGroups: ["", "extensions", "apps"]

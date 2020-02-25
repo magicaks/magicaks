@@ -1,6 +1,6 @@
-from pathlib import Path
 import sys
 import yaml
+from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 FAB_ENV = sys.argv[1]
@@ -29,5 +29,7 @@ with open('users.yaml') as f:
             for group in working_cluster.get('groups', []):
                 pass
             for app in working_cluster.get('apps', []):
-                    pass
-
+                app_template = env.get_template('app.tmpl')
+                app_name = app['name']
+                output = p / f'{app_name}.yaml'
+                output.write_text(app_template.render(app_name=app_name))
