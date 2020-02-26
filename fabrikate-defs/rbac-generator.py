@@ -21,10 +21,11 @@ with open('users.yaml') as f:
             working_cluster = cluster[FAB_ENV]
             for user in working_cluster.get('users', []):
                 username = ''.join(user['name'].split(' ')).lower()
+                email = user['email'].replace('@', 'AT').replace('.', 'DOT')
                 user_template = env.get_template('user.tmpl')
                 output = p / f'{username}.yaml'
                 output.write_text(user_template.render(name=username, 
-                                                       email=user['email'],
+                                                       email=email,
                                                        id=user['id']))
             
             for app in working_cluster.get('apps', []):

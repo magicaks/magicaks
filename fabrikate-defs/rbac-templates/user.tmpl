@@ -7,6 +7,20 @@ metadata:
     name: {{ name }}
     created-by: {{ email }}
 ---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{name }}
+  namespace: {{ name }}
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 1Gi
+    limits.cpu: "2"
+    limits.memory: 2Gi
+    persistentvolumeclaims: "5"
+    requests.storage: "10Gi"
+---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
