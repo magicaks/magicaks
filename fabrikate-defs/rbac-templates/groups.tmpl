@@ -1,0 +1,14 @@
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: {{ group_name }}-{{ app_name }}ns-read-access
+  namespace: {{ app_name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ app_name }}_ns-read-access
+subjects:
+- kind: Group
+  namespace: {{ app_name }}
+  name: {{ group_id }}

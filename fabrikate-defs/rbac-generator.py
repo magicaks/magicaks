@@ -26,10 +26,17 @@ with open('users.yaml') as f:
                 output.write_text(user_template.render(name=username, 
                                                        email=user['email'],
                                                        id=user['id']))
-            for group in working_cluster.get('groups', []):
-                pass
+            
             for app in working_cluster.get('apps', []):
                 app_template = env.get_template('app.tmpl')
                 app_name = app['name']
                 output = p / f'{app_name}.yaml'
                 output.write_text(app_template.render(app_name=app_name))
+
+                # for each app give groups read access.            
+                for group in working_cluster.get('groups', []):
+                    group_template = env.get_template('groups.tmpl')
+                    group_id = group['id']
+                    group_name = group['name']
+                    output = p / f'{group_name}.yaml'
+                    output.write_text(group_template.render(app_name=app_name, group_name=group_name, group_id=group_id))
