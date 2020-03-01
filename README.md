@@ -62,10 +62,8 @@ export ARM_CLIENT_ID=$TF_VAR_client_id
 export ARM_ACCESS_KEY=
 ```
 * Run ``source .env``
-* Make your choices in ``variables.tf``
-* Run ``terraform init``
-* Run ``terraform plan`` to check the execution plan
-* Run ``terraform apply`` to instantiate the automation run. It will take sometime to bring things online but eventually you should be able to see your workload coming up including all intergrations.
+* There is a folder ``onetime`` which contains terraform scripts to create those resources which need to be created just onetime. For example vnet, subnets and azure firewall and its rules. Check ``variables.tf`` and execute ``tf apply``. Please note if you create multiple clusters in the same vnet you need to then add the new subnet here and provide the route tables etc. Only one AKS cluster is allowed in one subnet.
+* Root module in this directory creates per cluster resources such as service bus, keyvault and the cluster itself. Again check ``variables.tf`` and execute ``terraform apply``. All resoureces will eventually come up and if the gitOps connection is successful so will all the workloads mentioned in your manifest repo.
 
 ## What all is installed right now?
 
