@@ -3,6 +3,9 @@ kind: PodSecurityPolicy
 metadata:
   name: allowreadingazure
 spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
   volumes:
     - 'hostPath'
   runAsUser:
