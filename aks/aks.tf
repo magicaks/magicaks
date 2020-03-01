@@ -23,45 +23,6 @@ resource "azurerm_log_analytics_solution" "k8s" {
     }
 }
 
-resource "azurerm_virtual_network" "k8s-vnet" {
-  name                = "k8s-vnet"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  address_space       = ["10.1.0.0/16"]
-}
-
-resource "azurerm_route_table" "subnet_route_table" {
-  name                          = "subnet-route-table"
-  location                      = var.location
-  resource_group_name           = var.resource_group_name
-  disable_bgp_route_propagation = false
-
-  route {
-    name           = "route1"
-    address_prefix = "10.1.0.0/24"
-    next_hop_type  = "vnetlocal"
-  }
-
-  tags = {
-    environment = "Production"
-  }
-}
-
-resource "azurerm_subnet" "k8s-subnet" {
-  name                 = "k8s-subnet"
-  resource_group_name  = var.resource_group_name
-  address_prefix       = "10.1.0.0/24"
-  virtual_network_name = azurerm_virtual_network.k8s-vnet.name
-  service_endpoints = ["Microsoft.KeyVault", "Microsoft.ServiceBus", 
-                       "Microsoft.Sql", "Microsoft.ContainerRegistry",
-                       "Microsoft.Storage"]
-}
-
-resource "azurerm_subnet_route_table_association" "routetblassociation" {
-  subnet_id      = azurerm_subnet.k8s-subnet.id
-  route_table_id = azurerm_route_table.subnet_route_table.id
-}
-
 resource "azurerm_kubernetes_cluster" "k8s" {
     name                = var.cluster_name
     location            = var.location
@@ -82,7 +43,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         os_disk_size_gb = 30
         type = "VirtualMachineScaleSets"
         enable_auto_scaling = true
-        vnet_subnet_id = azurerm_subnet.k8s-subnet.id
+        vnet_subnet_id = var.k8s_subnet_id
         min_count = 1
         max_count = 5
     }

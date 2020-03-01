@@ -28,6 +28,7 @@ module "aks" {
     aad_server_appid = var.aad_server_appid
     aad_server_app_secret = var.aad_server_app_secret
     aad_tenant_id = var.aad_tenant_id
+    k8s_subnet_id = var.k8s_subnet_id
 }
 
 module flux {
@@ -54,7 +55,7 @@ resource "azurerm_key_vault" "keyvault" {
   network_acls {
     bypass = "AzureServices"
     default_action = "Allow"
-    virtual_network_subnet_ids = [module.aks.subnet_id]
+    virtual_network_subnet_ids = [var.k8s_subnet_id]
   }
 
   # Access policy for service principal credentials on the cluster to access kv.
