@@ -14,7 +14,6 @@ spec:
     - 'secret'
     - 'downwardAPI'
     - 'persistentVolumeClaim'
-    - 'hostPath'
   hostNetwork: false
   hostIPC: false
   hostPID: false
@@ -33,7 +32,3 @@ spec:
       - min: 1
         max: 65535
   readOnlyRootFilesystem: false
-  # Allowing pods to use Azure
-  allowedHostPaths:
-    - pathPrefix: "/etc/kubernetes/azure.json"
-      readOnly: true # only allow read-only mounts
