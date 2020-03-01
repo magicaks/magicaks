@@ -1,7 +1,7 @@
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: default:psp:readazure
+  name: akv2k8s:psp:readazure
   namespace: default
 subjects:
 - kind: ServiceAccount
@@ -10,4 +10,18 @@ subjects:
 roleRef:
   kind: Role
   name: psp:readazure
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: akv2k8s:psp:allowsecretsvolume
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: akv2k8s-kvcontroller-azure-key-vault-controller
+  namespace: default
+roleRef:
+  kind: Role
+  name: psp:allowsecretsvolume
   apiGroup: rbac.authorization.k8s.io
