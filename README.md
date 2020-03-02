@@ -82,6 +82,7 @@ export ARM_ACCESS_KEY=
 6. Integration with Azure Active Directory for K8s RBAC.
 7. Pod security policies are enabled and a restricted policy added.
 8. Azure Policy is enabled on the cluster. No policies are assigned right now.
+9. Azure Firewall is integrated with network and application rules as recommended by AKS.
 
 ## What is upcoming
 Check open issues at [Github Issues](https://github.com/sachinkundu/akstf/issues)
