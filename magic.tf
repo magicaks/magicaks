@@ -112,6 +112,6 @@ resource "azurerm_key_vault_secret" "sbconnectionstring" {
   key_vault_id = azurerm_key_vault.keyvault.id
 
   provisioner "local-exec" {
-    command = "${path.cwd}/utils/expose-secret.sh ${self.name} ${azurerm_key_vault.keyvault.name}"
+    command = "${path.cwd}/utils/expose-secret.sh ${self.name} ${azurerm_key_vault.keyvault.name} ${var.app_name}"
   }
 }
