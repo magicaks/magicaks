@@ -38,7 +38,7 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: psp:akv2k8s
-  namespace: app1
+  namespace: admin
 rules:
 - apiGroups: ['extensions']
   resources: ['podsecuritypolicies']
@@ -49,11 +49,11 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: akv2k8s:psp:readazure
-  namespace: app1
+  namespace: admin
 subjects:
 - kind: ServiceAccount
   name: akv2k8s-kvcontroller-azure-key-vault-controller
-  namespace: app1
+  namespace: admin
 roleRef:
   kind: Role
   name: psp:akv2k8s
