@@ -1,0 +1,7 @@
+registry:
+  # Disable registry scanning completely
+  disableScanning: true
+
+syncGarbageCollection:
+  enabled: true
+  dry: false

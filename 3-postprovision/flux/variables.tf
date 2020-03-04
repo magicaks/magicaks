@@ -8,10 +8,13 @@ variable cluster_name {
 
 variable ghuser {}
 
-variable repo {}
+variable admin_repo {}
+variable workload_repo {}
 
 variable pat {}
 
 variable flux_recreate {
     default = false
 }
+
+variable "app_name" { }

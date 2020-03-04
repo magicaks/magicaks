@@ -1,0 +1,9 @@
+
+# Specifies which namespaces flux should have access to
+allowedNamespaces: ["app1"]
+
+clusterRole:
+  create: false
+  # The name of a cluster role to bind to; if not set and create is
+  # true, a name based on fullname is generated
+  name:

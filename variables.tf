@@ -30,10 +30,6 @@ variable k8s_manifest_repo {}
 
 variable pat {}
 
-variable flux_recreate {
-    default = false
-}
-
 variable "aad_client_appid" { }
 variable "aad_server_appid" { }
 variable "aad_server_app_secret" { }
