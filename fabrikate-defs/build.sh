@@ -54,6 +54,7 @@ function fab_generate() {
         echo "FAB GENERATE prod"
         fab generate prod
         generate_rbac_configs prod $(pwd)
+        generate_azmon_configs prod $(pwd)
     else
         echo "FAB_ENVS is set to $FAB_ENVS"
         IFS=',' read -ra ENV <<< "$FAB_ENVS"
@@ -64,6 +65,7 @@ function fab_generate() {
             # shellcheck disable=SC2086
             fab generate $i
             generate_rbac_configs $i $(pwd)
+            generate_azmon_configs $i $(pwd)
         done
     fi
 
@@ -163,6 +165,11 @@ function verify_pull_request() {
 function generate_rbac_configs() {
     echo "generate rbac configs"
     python rbac-generator.py $1 $2
+}
+
+function generate_azmon_configs() {
+    echo "generate azure monitor configs"
+    python azmonconfig-generator.py $1 $2
 }
 
 # Run functions
