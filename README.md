@@ -15,24 +15,27 @@ This automation is by design not general purpose. It is supposed to make things 
 
 As mentioned above the other goal of this automation is to use as much as possible plaform offerings on Azure and integrate them tightly at a suitable abstraction. This should make it easier for developers to assume presence of services which they need under a standard access model.
 
-These components are currently integrated
+These components are currently are or will eventually be integrated
 
-* Azure service bus as async message bus.
+* Azure service bus as async message bus (Done)
 * Azure SQL as database provider.
-* Azure container insights / Azure monitor for logging and metrics store.
-* Azure Active Directory for autentication and authorization. Integrated with K8s RBAC.
-* Azure KeyVault for secret storage.
-* Azure Policy for policy enforcement, compliance and governance.
+* Azure container insights / Azure monitor for logging and metrics store (Done)
+* Azure Active Directory for autentication and authorization. Integrated with K8s RBAC (Done)
+* Azure KeyVault for secret storage (Done)
+* Azure Policy for policy enforcement, compliance and governance (Done)
 * Azure App Gateway as ingress controller.
 
 When needed opensource tooling is integrated to provide components. For example kured.
 
-This automation is divided in two separate parts
+This automation is divided in 3 stages. We use terraform to bootstrap infrastructure and set up a gitOps connection in the cluster which then picks up kubernetes manifests for the declared state of the cluster.
 
-1. Bootstrapping Azure infrastructure like resource group, subnets, keyvault and the cluster itself using Terraform.
-2. Installing workloads inside the cluster when it ready using gitOps connection to a kubernetes manifest repo. This is configured when the cluster in step 1 is bootstrapped.
+These manifests are in turn divided into two parts. 
+1. Manifests which require admin permissions on the cluster to install.
+2. Manifests for workloads which run within a namespace and with limited credentials.
 
-Instead of writing k8s manifests directly we use Fabrikate HLD to write the config which is then translated to K8s manifests using a pipeline which in turn runs ``fab generate`` and pushes the config to the k8s manifest repo.
+This is done to prevent unauthorized installations in the cluster. Hence, there are two flux pods running, one for each type of manifest. Admin manifests should come from a repository which is controlled by cluster admins and has tighter process control methods so that every input is checked before being applied to the cluster.
+
+Instead of writing k8s manifests directly we use Fabrikate HLD to write the config which is then translated to K8s manifests using a pipeline which in turn runs ``fab generate`` and pushes the config to the k8s manifest repo. However you do not need to use Fabrikate. The automatiion expects names of kubernetes manifest repo and you can use any manifest generation tool of your choice, for example kustomize.
 
 ## How to use this repo
 
@@ -40,10 +43,13 @@ Instead of writing k8s manifests directly we use Fabrikate HLD to write the conf
 
 These steps need to be done once each time a new project is started.
 
-* Generate AAD server and client applications by running the file ``utils/create-rbac-apps.sh``. Please notes that this script can only be run by owner or the active directory. You can use the same credentials for all projects so this is not needed per project but once for each Active Directory used.
-* Extract the folder ``fabirkate-defs`` and push these files into a new repo called fabrikate-defs. Make sure to read README.md in that folder to do the configs required to set up AAD and RBAC setup.
-* Make a new repo called k8smanifests. This will be your k8s manifests tracked by flux gitOps controller.
+* Generate AAD server and client applications by running the file ``utils/create-rbac-apps.sh``. Please notes that this script can only be run by **owner** or the active directory. You can use the same credentials for all projects so this is not needed per project but once for each Active Directory used.
+* Extract the folder ``fabirkate-defs`` and push these files into a new repo. This is the admin HLD repo. Make sure to read README.md in that folder to do the configs required to set up AAD and RBAC setup.
+* Make a new repo called k8smanifests. this will be your admin manifest repo as tracked by flux gitOps admin controller.
 * Setup github actions pipeline using ``.github/workflows/generate-manifests-gh.yaml`` as the sample and use the above repo as the repo to write the generated k8s manifests.
+* Make another repo called k8sworkloads, a sample is [here](https://github.com/sachinkundu/k8sworkloads). This is where non privileged workloads should be listed. This is tracked by flux gitOps non admin controller. 
+
+### Provisioning resources
 * Make a file called .env and put these values in it and fill those with suitable values.
 ```
 # Service principal used for creating cluster.
@@ -62,8 +68,10 @@ export ARM_CLIENT_ID=$TF_VAR_client_id
 export ARM_ACCESS_KEY=
 ```
 * Run ``source .env``
-* There is a folder ``onetime`` which contains terraform scripts to create those resources which need to be created just onetime. For example vnet, subnets and azure firewall and its rules. Check ``variables.tf`` and execute ``tf apply``. Please note if you create multiple clusters in the same vnet you need to then add the new subnet here and provide the route tables etc. Only one AKS cluster is allowed in one subnet.
-* Root module in this directory creates per cluster resources such as service bus, keyvault and the cluster itself. Again check ``variables.tf`` and execute ``terraform apply``. All resoureces will eventually come up and if the gitOps connection is successful so will all the workloads mentioned in your manifest repo.
+* All terraform state information is stored in Azure storage credentials of which are provided using the exported variable ``ARM_ACCESS_KEY`` above. Please make sure you check ``main.tf`` in each step below to confirm the settings for state storage. Default values should also work fine.
+* There is a folder ``1-preprovision`` which contains terraform scripts to create those resources which need to be created just onetime. For example vnet, subnets and azure firewall and its rules. Check ``variables.tf`` and execute ``tf apply``. Please note if you create multiple clusters in the same vnet you need to then add the new subnet here and provide the route tables etc. Only one AKS cluster is allowed in one subnet.
+* To provision the cluster you need to step into ``2-provision-aks`` folder and run terraform as usual. This step will also download the credentials for interacting with the cluster which is required for the following steps.
+* After the cluster is provisioned we provision all support resources by stepping into ``3-postprovision`` and running terraform as usual. This will set up flux for admin and non admin workloads and eventually the desired state of the configs will be applied to your cluster. This is also where service bus and keyvault etc will be created.
 
 ## What all is installed right now?
 
