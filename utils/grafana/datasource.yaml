@@ -1,0 +1,24 @@
+- access: proxy
+  basicAuth: false
+  database: ''
+  id: 1
+  isDefault: true
+  jsonData:
+    azureLogAnalyticsSameAs: false
+    clientId: ad4505fb-94da-44fa-b3db-b33c6c634255
+    cloudName: azuremonitor
+    keepCookies: null
+    logAnalyticsClientId: ad4505fb-94da-44fa-b3db-b33c6c634255
+    logAnalyticsDefaultWorkspace: c9fcb476-2c8a-47e5-a4e1-3b1cdeefb96f
+    logAnalyticsSubscriptionId: b6a69b21-5dea-4475-9cd5-e9f2f8eb1e27
+    logAnalyticsTenantId: 72f988bf-86f1-41af-91ab-2d7cd011db47
+    subscriptionId: b6a69b21-5dea-4475-9cd5-e9f2f8eb1e27
+    tenantId: 72f988bf-86f1-41af-91ab-2d7cd011db47
+  name: Azure
+  orgId: 1
+  password: ''
+  readOnly: false
+  type: grafana-azure-monitor-datasource
+  typeLogoUrl: public/app/plugins/datasource/grafana-azure-monitor-datasource/img/logo.jpg
+  url: /api/datasources/proxy/1
+  user: ''
