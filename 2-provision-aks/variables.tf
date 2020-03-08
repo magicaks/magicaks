@@ -1,22 +1,6 @@
 variable "client_id" {}
 variable "client_secret" {}
 
-variable "agent_count" {
-    default = 1
-}
-
-variable "ssh_public_key" {
-    default = "~/.ssh/id_rsa.pub"
-}
-
-variable "dns_prefix" {
-    default = "sakunduk8s"
-}
-
-variable cluster_name {
-    default = "k8s"
-}
-
 variable resource_group_name {
     default = "k8s"
 }
@@ -37,8 +21,20 @@ variable log_analytics_workspace_sku {
     default = "PerGB2018"
 }
 
+variable "dns_prefix" {
+    default = "magicaks"
+}
+
+variable cluster_name {
+    default = "magicaks"
+}
+
 variable "aad_client_appid" { }
 variable "aad_server_appid" { }
 variable "aad_server_app_secret" { }
 variable "aad_tenant_id" { }
 variable "k8s_subnet_id" { }
+variable "aci_network_profile_id" {}
+variable "grafana_admin_password" {}
+variable "acr_name" {}
+variable "key_vault_id" {}
