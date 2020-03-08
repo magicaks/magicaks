@@ -1,30 +1,55 @@
-resource "azurerm_resource_group" "longlasting" {
-  name     = var.resource_group_name
-  location = var.location
-}
-
 resource "azurerm_virtual_network" "vnet" {
   name                = "magicaks-vnet"
-  location            = azurerm_resource_group.longlasting.location
-  resource_group_name = azurerm_resource_group.longlasting.name
+  location            = var.location
+  resource_group_name = var.resource_group_name
   address_space       = ["10.1.0.0/16"]
 }
 
 resource "azurerm_subnet" "k8s-subnet" {
   name                 = "k8s-subnet"
-  resource_group_name  = azurerm_resource_group.longlasting.name
+  resource_group_name  = var.resource_group_name
   address_prefix       = "10.1.2.0/24"
   virtual_network_name = azurerm_virtual_network.vnet.name
   service_endpoints = ["Microsoft.KeyVault", "Microsoft.ServiceBus", 
                        "Microsoft.Sql", "Microsoft.ContainerRegistry",
                        "Microsoft.Storage"]
-  route_table_id    = "/subscriptions/b6a69b21-5dea-4475-9cd5-e9f2f8eb1e27/resourceGroups/magicaks-longlasting/providers/Microsoft.Network/routeTables/subnet-route-table"
+}
+
+resource "azurerm_subnet" "acisubnet" {
+  name                 = "acisubnet"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefix       = "10.1.3.0/24"
+
+  delegation {
+    name = "delegation"
+
+    service_delegation {
+      name    = "Microsoft.ContainerInstance/containerGroups"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+    }
+  }
+}
+
+resource "azurerm_network_profile" "aciprofile" {
+  name                = "aciprofile"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  container_network_interface {
+    name = "acinic"
+
+    ip_configuration {
+      name      = "aciipconfig"
+      subnet_id = azurerm_subnet.acisubnet.id
+    }
+  }
 }
 
 resource "azurerm_route_table" "subnet_route_table" {
   name                          = "subnet-route-table"
-  location                      = azurerm_resource_group.longlasting.location
-  resource_group_name           = azurerm_resource_group.longlasting.name
+  location                      = var.location
+  resource_group_name           = var.resource_group_name
   disable_bgp_route_propagation = false
 
   route {
@@ -52,23 +77,23 @@ resource "azurerm_subnet_route_table_association" "routetblassociation" {
 
 resource "azurerm_subnet" "fwsubnet" {
   name                 = "AzureFirewallSubnet"
-  resource_group_name  = azurerm_resource_group.longlasting.name
+  resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefix       = "10.1.1.0/24"
 }
 
 resource "azurerm_public_ip" "fwip" {
   name                = "fwpublicip"
-  location            = azurerm_resource_group.longlasting.location
-  resource_group_name = azurerm_resource_group.longlasting.name
+  location            = var.location
+  resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 
 resource "azurerm_firewall" "magicaksfirewall" {
   name                = "MagicAKSFirewall"
-  location            = azurerm_resource_group.longlasting.location
-  resource_group_name = azurerm_resource_group.longlasting.name
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
   ip_configuration {
     name                 = "configuration"
@@ -80,7 +105,7 @@ resource "azurerm_firewall" "magicaksfirewall" {
 resource "azurerm_firewall_network_rule_collection" "magicaksrules" {
   name                = "OutboundRules"
   azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = azurerm_resource_group.longlasting.name
+  resource_group_name = var.resource_group_name
   priority            = 100
   action              = "Allow"
 
@@ -171,7 +196,7 @@ resource "azurerm_firewall_network_rule_collection" "magicaksrules" {
 resource "azurerm_firewall_application_rule_collection" "AKS_Global_Required" {
   name                = "AKS_Global_Required"
   azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = azurerm_resource_group.longlasting.name
+  resource_group_name = var.resource_group_name
   priority            = 100
   action              = "Allow"
 
@@ -210,7 +235,7 @@ resource "azurerm_firewall_application_rule_collection" "AKS_Global_Required" {
 resource "azurerm_firewall_application_rule_collection" "AKS_Cloud_Specific_Required" {
   name                = "AKS_Cloud_Specific_Required"
   azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = azurerm_resource_group.longlasting.name
+  resource_group_name = var.resource_group_name
   priority            = 200
   action              = "Allow"
 
@@ -236,7 +261,7 @@ resource "azurerm_firewall_application_rule_collection" "AKS_Cloud_Specific_Requ
 resource "azurerm_firewall_application_rule_collection" "UbuntuUpdates" {
   name                = "UbuntuUpdates"
   azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = azurerm_resource_group.longlasting.name
+  resource_group_name = var.resource_group_name
   priority            = 300
   action              = "Allow"
 
@@ -268,7 +293,7 @@ resource "azurerm_firewall_application_rule_collection" "UbuntuUpdates" {
 resource "azurerm_firewall_application_rule_collection" "AKS_Azure_Monitor_Required" {
   name                = "AKS_Azure_Monitor_Required"
   azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = azurerm_resource_group.longlasting.name
+  resource_group_name = var.resource_group_name
   priority            = 400
   action              = "Allow"
 
@@ -297,7 +322,7 @@ resource "azurerm_firewall_application_rule_collection" "AKS_Azure_Monitor_Requi
 resource "azurerm_firewall_application_rule_collection" "AKS_For_Public_Container_Registries_Required" {
   name                = "AKS_For_Public_Container_Registries_Required"
   azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = azurerm_resource_group.longlasting.name
+  resource_group_name = var.resource_group_name
   priority            = 500
   action              = "Allow"
 
@@ -333,7 +358,7 @@ resource "azurerm_firewall_application_rule_collection" "AKS_For_Public_Containe
 resource "azurerm_firewall_application_rule_collection" "Flux" {
   name                = "Flux"
   azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = azurerm_resource_group.longlasting.name
+  resource_group_name = var.resource_group_name
   priority            = 600
   action              = "Allow"
 
@@ -358,7 +383,7 @@ resource "azurerm_firewall_application_rule_collection" "Flux" {
 resource "azurerm_firewall_application_rule_collection" "KeyVault" {
   name                = "KeyVault"
   azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = azurerm_resource_group.longlasting.name
+  resource_group_name = var.resource_group_name
   priority            = 700
   action              = "Allow"
 
@@ -383,7 +408,7 @@ resource "azurerm_firewall_application_rule_collection" "KeyVault" {
 resource "azurerm_firewall_application_rule_collection" "AzurePolicy" {
   name                = "AzurePolicy"
   azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = azurerm_resource_group.longlasting.name
+  resource_group_name = var.resource_group_name
   priority            = 800
   action              = "Allow"
 

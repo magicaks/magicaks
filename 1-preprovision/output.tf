@@ -1,3 +1,7 @@
 output "k8s_subnet_id" {
-    value = azurerm_subnet.k8s-subnet.id
+    value = module.networking.k8s_subnet_id
+}
+
+output "network_profile_id" {
+    value = module.networking.network_profile_id
 }
