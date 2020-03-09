@@ -6,6 +6,12 @@ provider "helm" {
   }
 }
 
+provider "github" {
+  token = var.pat
+  individual = "false"
+  organization = var.ghuser
+}
+
 resource "kubernetes_namespace" "flux-admin" {
   metadata {
     labels = {
@@ -49,11 +55,26 @@ resource "helm_release" "flux-admin" {
     value = "dev"
   }
 
-  provisioner "local-exec" {
-    command = "${path.cwd}/flux/install-keys.sh ${var.ghuser} ${var.admin_repo} ${var.pat} ${kubernetes_namespace.flux-admin.metadata[0].name}"
+  depends_on = [kubernetes_namespace.flux-admin]
+}
+
+data "external" "flux_admin_key" {
+  program = ["sh", "${path.cwd}/flux/fluxkey.sh"]
+  query = {
+    namespace = kubernetes_namespace.flux-admin.metadata[0].name
   }
 
-  depends_on = [kubernetes_namespace.flux-admin]
+  depends_on = [helm_release.flux-admin]
+}
+
+# Add a deploy key
+resource "github_repository_deploy_key" "flux-admin" {
+  title      = "flux-admin-${formatdate("D-M-YY", timestamp())}"
+  repository = var.admin_repo
+  key        = data.external.flux_admin_key.result["key"]
+  read_only  = "false"
+
+  depends_on = [helm_release.flux-admin]
 }
 
 resource "kubernetes_namespace" "flux-workloads" {
@@ -95,11 +116,24 @@ resource "helm_release" "flux-workloads" {
     value = "dev"
   }
 
-  provisioner "local-exec" {
-    command = "${path.cwd}/flux/install-keys.sh ${var.ghuser} ${var.workload_repo} ${var.pat} ${kubernetes_namespace.flux-workloads.metadata[0].name}"
-  }
-
   depends_on = [kubernetes_namespace.flux-admin, 
-                helm_release.flux-admin,
-                kubernetes_namespace.flux-workloads]
+                helm_release.flux-admin]
+}
+
+data "external" "flux_workload_key" {
+  program = ["sh", "${path.cwd}/flux/fluxkey.sh"]
+  query = {
+    namespace = kubernetes_namespace.flux-workloads.metadata[0].name
+  }
+  depends_on = [helm_release.flux-workloads]
+}
+
+# Add a deploy key
+resource "github_repository_deploy_key" "flux-workloads" {
+  title      = "flux-workloads-${formatdate("D-M-YY", timestamp())}"
+  repository = var.workload_repo
+  key        = data.external.flux_workload_key.result["key"]
+  read_only  = "false"
+
+  depends_on = [helm_release.flux-workloads]
 }
