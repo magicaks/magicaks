@@ -37,7 +37,18 @@ This is done to prevent unauthorized installations in the cluster. Hence, there 
 
 Instead of writing k8s manifests directly we use Fabrikate HLD to write the config which is then translated to K8s manifests using a pipeline which in turn runs ``fab generate`` and pushes the config to the k8s manifest repo. However you do not need to use Fabrikate. The automatiion expects names of kubernetes manifest repo and you can use any manifest generation tool of your choice, for example kustomize.
 
+If you use a different manifest generation system make sure you to run ``rbac-generator.py`` and ``azmonconfig-generator.py`` as part of building the manifests.
+
 ## How to use this repo
+
+### Software requirements
+
+This repo has been tested to work with OSX, Linux and Windows(on wsl). You need to install
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+- [fluxctl](https://docs.fluxcd.io/en/1.18.0/references/fluxctl.html)
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and logged in with a user who has enough permissions.
+- [Terraform](https://www.terraform.io/downloads.html)
+- curl
 
 ### One time setup
 
@@ -60,6 +71,8 @@ export TF_VAR_pat=
 export TF_VAR_tenant_id=
 # Azure AAD server application secret. 
 export TF_VAR_aad_server_app_secret=
+# Grafana password
+export TF_VAR_grafana_admin_password=
 export ARM_SUBSCRIPTION_ID=
 export ARM_TENANT_ID=$TF_VAR_tenant_id
 export ARM_CLIENT_SECRET=$TF_VAR_client_secret
@@ -68,10 +81,10 @@ export ARM_CLIENT_ID=$TF_VAR_client_id
 export ARM_ACCESS_KEY=
 ```
 * Run ``source .env``
-* All terraform state information is stored in Azure storage credentials of which are provided using the exported variable ``ARM_ACCESS_KEY`` above. Please make sure you check ``main.tf`` in each step below to confirm the settings for state storage. Default values should also work fine.
-* There is a folder ``1-preprovision`` which contains terraform scripts to create those resources which need to be created just onetime. For example vnet, subnets and azure firewall and its rules. Check ``variables.tf`` and execute ``tf apply``. Please note if you create multiple clusters in the same vnet you need to then add the new subnet here and provide the route tables etc. Only one AKS cluster is allowed in one subnet.
-* To provision the cluster you need to step into ``2-provision-aks`` folder and run terraform as usual. This step will also download the credentials for interacting with the cluster which is required for the following steps.
-* After the cluster is provisioned we provision all support resources by stepping into ``3-postprovision`` and running terraform as usual. This will set up flux for admin and non admin workloads and eventually the desired state of the configs will be applied to your cluster. This is also where service bus and keyvault etc will be created.
+* All terraform state information is stored in Azure storage. Credentials of this storage is provided using the exported variable ``ARM_ACCESS_KEY`` above. Please make sure you check ``main.tf`` in each step below to confirm the settings for state storage. Default values should also work fine.
+* There is a folder ``1-preprovision`` which contains terraform scripts to create those resources which need to be created just onetime. For example vnet, subnets azure firewall and its rules and keyvault etc. Check ``variables.tf`` and execute ``tf apply``. Please note if you create multiple clusters in the same vnet you need to then add the new subnet here and provide the route tables etc. Only one AKS cluster is allowed in one subnet.
+* To provision the cluster you need to step into ``2-provision-aks`` folder and run terraform as usual. This step will also download the credentials for interacting with the cluster which is required for the following steps. Grafana is also created at this step and connected to the log analytics workspace. Postgres is also created which acts as the storage backend for grafana.
+* After the cluster is provisioned we provision all support resources by stepping into ``3-postprovision`` and running terraform as usual. This will set up flux for admin and non admin workloads and eventually the desired state of the configs will be applied to your cluster. This is also where service bus etc will be created.
 
 ## What all is installed right now?
 
@@ -91,6 +104,7 @@ export ARM_ACCESS_KEY=
 7. Pod security policies are enabled and a restricted policy added.
 8. Azure Policy is enabled on the cluster. No policies are assigned right now.
 9. Azure Firewall is integrated with network and application rules as recommended by AKS.
+10. Grafana connected to log analytics workspace of the cluster is running in Azure container instance backed by managed Postgresql Azure database. 
 
 ## What is upcoming
 Check open issues at [Github Issues](https://github.com/sachinkundu/akstf/issues)
