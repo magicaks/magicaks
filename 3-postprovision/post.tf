@@ -1,4 +1,3 @@
-
 resource "kubernetes_namespace" "admin" {
   metadata {
     labels = {
@@ -29,10 +28,10 @@ module "servicebus" {
 resource "azurerm_key_vault_secret" "sbconnectionstring" {
   name         = "servicebus-connectionstring"
   value        = module.servicebus.primary_connection_string
-  key_vault_id = azurerm_key_vault.keyvault.id
+  key_vault_id = var.keyvault_id
 
   provisioner "local-exec" {
-    command = "${path.cwd}/../utils/expose-secret.sh ${self.name} ${azurerm_key_vault.keyvault.name} ${var.app_name}"
+    command = "${path.cwd}/../utils/expose-secret.sh ${self.name} magicaks-keyvault ${var.app_name}"
   }
 
   depends_on = [module.flux]

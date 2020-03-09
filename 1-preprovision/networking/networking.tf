@@ -13,6 +13,7 @@ resource "azurerm_subnet" "k8s-subnet" {
   service_endpoints = ["Microsoft.KeyVault", "Microsoft.ServiceBus", 
                        "Microsoft.Sql", "Microsoft.ContainerRegistry",
                        "Microsoft.Storage"]
+  route_table_id = "/subscriptions/b6a69b21-5dea-4475-9cd5-e9f2f8eb1e27/resourceGroups/magicaks-node-rg/providers/Microsoft.Network/routeTables/aks-agentpool-28192664-routetable"
 }
 
 resource "azurerm_subnet" "acisubnet" {
@@ -29,6 +30,15 @@ resource "azurerm_subnet" "acisubnet" {
       actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }
+  service_endpoints = [ "Microsoft.Sql", "Microsoft.ContainerRegistry"]
+
+}
+
+resource "azurerm_subnet" "adhocsubnet" {
+  name                 = "adhocsubnet"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefix       = "10.1.4.0/24"
 }
 
 resource "azurerm_network_profile" "aciprofile" {
@@ -72,7 +82,7 @@ resource "azurerm_route_table" "subnet_route_table" {
 
 resource "azurerm_subnet_route_table_association" "routetblassociation" {
   subnet_id      = azurerm_subnet.k8s-subnet.id
-  route_table_id = azurerm_route_table.subnet_route_table.id
+  route_table_id = "/subscriptions/b6a69b21-5dea-4475-9cd5-e9f2f8eb1e27/resourceGroups/magicaks-node-rg/providers/Microsoft.Network/routeTables/aks-agentpool-28192664-routetable"
 }
 
 resource "azurerm_subnet" "fwsubnet" {

@@ -9,3 +9,4 @@ variable tenant_id {}
 variable client_id {}
 variable k8s_subnet_id {}
 variable "app_name" { }
+variable "keyvault_id" {}

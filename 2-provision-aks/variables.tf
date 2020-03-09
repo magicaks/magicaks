@@ -1,3 +1,6 @@
+variable "subscription_id" {}
+variable "tenant_id" {}
+
 variable "client_id" {}
 variable "client_secret" {}
 
@@ -33,8 +36,12 @@ variable "aad_client_appid" { }
 variable "aad_server_appid" { }
 variable "aad_server_app_secret" { }
 variable "aad_tenant_id" { }
+
 variable "k8s_subnet_id" { }
+variable "aci_subnet_id" { }
+
 variable "aci_network_profile_id" {}
 variable "grafana_admin_password" {}
 variable "acr_name" {}
 variable "key_vault_id" {}
+variable "cluster_support_db_admin_password" {}

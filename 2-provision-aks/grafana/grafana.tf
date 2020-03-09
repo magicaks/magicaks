@@ -36,7 +36,7 @@ resource "azurerm_container_group" "grafana" {
 
   container {
     name   = "grafana"
-    image  = "${var.acr_name}/grafana:v1"
+    image  = "${var.acr_name}.azurecr.io/grafana:v2"
     cpu    = "1.0"
     memory = "1.5"
 
@@ -45,16 +45,20 @@ resource "azurerm_container_group" "grafana" {
       protocol = "TCP"
     }
     
-    # environment_variables ["name=value"]
+    environment_variables = {
+                              "SUBSCRIPTION_ID" = var.subscription_id, 
+                              "TENANT_ID" = var.tenant_id,
+                              "CLIENT_ID" = var.client_id
+                              "LOG_ANALYTICS_WORKSPACE" = var.log_analytics_workspace_id
+                              "GF_DATABASE_TYPE" = "postgres"
+                              "GF_DATABASE_USER" = "psqladmin@cluster-support-db"
+                              "GF_DATABASE_HOST" = "${var.db_host}:5432"
+                              "GF_DATABASE_PASSWORD" = var.db_password
+                              "GF_DATABASE_NAME" = var.db_name
+                              "GF_DATABASE_SSL_MODE" = "require"
+                              "GF_DATABASE_LOG_QUERIES" = "true"
+                            }
 
-    # secure_environment_variables ["name=value"]
-
-    volume {
-        name = "grafana-storage"
-        mount_path = "/var/lib/grafana"
-        storage_account_name = var.storage_account_name
-        storage_account_key = var.storage_account_key
-        share_name = var.share_name
-    }
+    secure_environment_variables = {"CLIENT_SECRET" = var.client_secret}
   }
 }
