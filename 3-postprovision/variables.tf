@@ -14,4 +14,4 @@ variable k8s_subnet_id {}
 
 variable app_name { }
 
-variable keyvault_id {}
+variable key_vault_id {}

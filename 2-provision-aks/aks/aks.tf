@@ -51,11 +51,14 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     }    
     network_profile {
         network_plugin = "kubenet"
+        network_policy = "calico"
     }
 
     tags = {
         Environment = "Development"
     }
+
+    
 
     enable_pod_security_policy = true
     kubernetes_version = "1.17.0"

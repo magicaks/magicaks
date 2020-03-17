@@ -20,4 +20,4 @@ variable "aad_server_app_secret" {}
 variable "aad_tenant_id" {}
 variable "k8s_subnet_id" {}
 variable "client_id" {}
-variable "client_secret" {}       
+variable "client_secret" {} 

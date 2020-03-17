@@ -16,5 +16,3 @@ variable pat {}
 variable flux_recreate {
     default = false
 }
-
-variable "app_name" { }

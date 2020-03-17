@@ -15,7 +15,6 @@ module flux {
   admin_repo = var.k8s_manifest_repo
   workload_repo = var.k8s_workload_repo
   pat = var.pat
-  app_name = var.app_name
 }
 
 module "servicebus" {  
@@ -28,7 +27,7 @@ module "servicebus" {
 resource "azurerm_key_vault_secret" "sbconnectionstring" {
   name         = "servicebus-connectionstring"
   value        = module.servicebus.primary_connection_string
-  key_vault_id = var.keyvault_id
+  key_vault_id = var.key_vault_id
 
   provisioner "local-exec" {
     command = "${path.cwd}/../utils/expose-secret.sh ${self.name} magicaks-keyvault ${var.app_name}"

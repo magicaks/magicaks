@@ -59,7 +59,7 @@ resource "helm_release" "flux-admin" {
 }
 
 data "external" "flux_admin_key" {
-  program = ["sh", "${path.cwd}/flux/fluxkey.sh"]
+  program = ["bash", "${path.cwd}/flux/fluxkey.sh"]
   query = {
     namespace = kubernetes_namespace.flux-admin.metadata[0].name
   }
@@ -121,7 +121,7 @@ resource "helm_release" "flux-workloads" {
 }
 
 data "external" "flux_workload_key" {
-  program = ["sh", "${path.cwd}/flux/fluxkey.sh"]
+  program = ["bash", "${path.cwd}/flux/fluxkey.sh"]
   query = {
     namespace = kubernetes_namespace.flux-workloads.metadata[0].name
   }

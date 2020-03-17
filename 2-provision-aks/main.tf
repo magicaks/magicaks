@@ -20,7 +20,7 @@ resource "azurerm_postgresql_server" "clustersupportdb" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
-  # sku_name = "GP_Gen5_2"
+  sku_name = "GP_Gen5_2"
 
   storage_profile {
     storage_mb            = 5120
@@ -29,12 +29,12 @@ resource "azurerm_postgresql_server" "clustersupportdb" {
     auto_grow             = "Enabled"
   }
 
-  sku {
-    capacity = 2
-    family   = "Gen5"
-    name     = "GP_Gen5_2"
-    tier     = "GeneralPurpose"
-}
+#   sku {
+#     capacity = 2
+#     family   = "Gen5"
+#     name     = "GP_Gen5_2"
+#     tier     = "GeneralPurpose"
+# }
 
   administrator_login          = "psqladmin"
   administrator_login_password = var.cluster_support_db_admin_password
