@@ -13,7 +13,6 @@ resource "azurerm_subnet" "k8s-subnet" {
   service_endpoints = ["Microsoft.KeyVault", "Microsoft.ServiceBus", 
                        "Microsoft.Sql", "Microsoft.ContainerRegistry",
                        "Microsoft.Storage"]
-  route_table_id = "/subscriptions/b6a69b21-5dea-4475-9cd5-e9f2f8eb1e27/resourceGroups/magicaks-node-rg/providers/Microsoft.Network/routeTables/aks-agentpool-28192664-routetable"
 }
 
 resource "azurerm_subnet" "acisubnet" {
@@ -82,7 +81,7 @@ resource "azurerm_route_table" "subnet_route_table" {
 
 resource "azurerm_subnet_route_table_association" "routetblassociation" {
   subnet_id      = azurerm_subnet.k8s-subnet.id
-  route_table_id = "/subscriptions/b6a69b21-5dea-4475-9cd5-e9f2f8eb1e27/resourceGroups/magicaks-node-rg/providers/Microsoft.Network/routeTables/aks-agentpool-28192664-routetable"
+  route_table_id = azurerm_route_table.subnet_route_table.id
 }
 
 resource "azurerm_subnet" "fwsubnet" {
@@ -128,7 +127,8 @@ resource "azurerm_firewall_network_rule_collection" "magicaksrules" {
 
     destination_ports = [
       "9000", #tunnel front
-      "22"
+      "22",
+      "1194"
     ]
 
     destination_addresses = [
@@ -218,6 +218,8 @@ resource "azurerm_firewall_application_rule_collection" "AKS_Global_Required" {
     ]
 
     target_fqdns = [
+        "*.hcp.${var.location}.azmk8s.io",
+        "*.tun.${var.location}.azmk8s.io",
         "aksrepos.azurecr.io",
         "*blob.core.windows.net",
         "mcr.microsoft.com",

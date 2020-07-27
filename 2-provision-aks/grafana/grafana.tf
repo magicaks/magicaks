@@ -36,7 +36,7 @@ resource "azurerm_container_group" "grafana" {
 
   container {
     name   = "grafana"
-    image  = "${var.acr_name}.azurecr.io/grafana:v2"
+    image  = "${var.acr_name}.azurecr.io/grafana:v1"
     cpu    = "1.0"
     memory = "1.5"
 
