@@ -29,13 +29,13 @@ When needed opensource tooling is integrated to provide components. For example 
 
 This automation is divided in 3 stages. We use terraform to bootstrap infrastructure and set up a gitOps connection in the cluster which then picks up kubernetes manifests for the declared state of the cluster.
 
-These manifests are in turn divided into two parts. 
+These manifests are in turn divided into two parts.
 1. Manifests which require admin permissions on the cluster to install.
 2. Manifests for workloads which run within a namespace and with limited credentials.
 
 This is done to prevent unauthorized installations in the cluster. Hence, there are two flux pods running, one for each type of manifest. Admin manifests should come from a repository which is controlled by cluster admins and has tighter process control methods so that every input is checked before being applied to the cluster.
 
-Instead of writing k8s manifests directly we use Fabrikate HLD to write the config which is then translated to K8s manifests using a pipeline which in turn runs ``fab generate`` and pushes the config to the k8s manifest repo. However you do not need to use Fabrikate. The automatiion expects names of kubernetes manifest repo and you can use any manifest generation tool of your choice, for example kustomize.
+Instead of writing k8s manifests directly we use Fabrikate HLD to write the config which is then translated to K8s manifests using a pipeline which in turn runs ``fab generate`` and pushes the config to the k8s manifest repo. However you do not need to use Fabrikate. The automation expects names of kubernetes manifest repo and you can use any manifest generation tool of your choice, for example kustomize.
 
 If you use a different manifest generation system make sure you to run ``rbac-generator.py`` and ``azmonconfig-generator.py`` as part of building the manifests.
 
@@ -54,11 +54,11 @@ This repo has been tested to work with OSX, Linux and Windows(on wsl). You need 
 
 These steps need to be done once each time a new project is started.
 
-* Generate AAD server and client applications by running the file ``utils/create-rbac-apps.sh``. Please notes that this script can only be run by **owner** or the active directory. You can use the same credentials for all projects so this is not needed per project but once for each Active Directory used.
-* Extract the folder ``fabirkate-defs`` and push these files into a new repo. This is the admin HLD repo. Make sure to read README.md in that folder to do the configs required to set up AAD and RBAC setup.
+* Generate AAD server and client applications by running the file ``utils/create-rbac-apps.sh``. Please notes that this script can only be run by **owner** of the active directory. You can use the same credentials for all projects so this is not needed per project but once for each Active Directory used.
+* Extract the folder ``fabrikate-defs`` and push these files into a new repo. This is the admin HLD repo. Make sure to read README.md in that folder to do the configs required to set up AAD and RBAC setup.
 * Make a new repo called k8smanifests. this will be your admin manifest repo as tracked by flux gitOps admin controller.
 * Setup github actions pipeline using ``.github/workflows/generate-manifests-gh.yaml`` as the sample and use the above repo as the repo to write the generated k8s manifests.
-* Make another repo called k8sworkloads, a sample is [here](https://github.com/sachinkundu/k8sworkloads). This is where non privileged workloads should be listed. This is tracked by flux gitOps non admin controller. 
+* Make another repo called k8sworkloads, a sample is [here](https://github.com/sachinkundu/k8sworkloads). This is where non-privileged workloads should be listed. This is tracked by flux gitOps non admin controller.
 
 ### Provisioning resources
 * Make a file called .env and put these values in it and fill those with suitable values.
@@ -69,7 +69,7 @@ export TF_VAR_client_id=
 # Github personal access token
 export TF_VAR_pat=
 export TF_VAR_tenant_id=
-# Azure AAD server application secret. 
+# Azure AAD server application secret.
 export TF_VAR_aad_server_app_secret=
 # Grafana password
 export TF_VAR_grafana_admin_password=
@@ -104,7 +104,7 @@ export ARM_ACCESS_KEY=
 7. Pod security policies are enabled and a restricted policy added.
 8. Azure Policy is enabled on the cluster. No policies are assigned right now.
 9. Azure Firewall is integrated with network and application rules as recommended by AKS.
-10. Grafana connected to log analytics workspace of the cluster is running in Azure container instance backed by managed Postgresql Azure database. 
+10. Grafana connected to log analytics workspace of the cluster is running in Azure container instance backed by managed Postgresql Azure database.
 
 ## What is upcoming
 Check open issues at [Github Issues](https://github.com/sachinkundu/akstf/issues)
