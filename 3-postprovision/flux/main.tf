@@ -8,7 +8,6 @@ provider "helm" {
 
 provider "github" {
   token = var.pat
-  individual = "false"
   organization = var.ghuser
 }
 
@@ -21,14 +20,10 @@ resource "kubernetes_namespace" "flux-admin" {
   }
 }
 
-data "helm_repository" "incubator" {
-  name = "fluxcd"
-  url  = "https://charts.fluxcd.io"
-}
-
 resource "helm_release" "flux-admin" {
   name  = "flux-admin"
   chart = "fluxcd/flux"
+  repository = "fluxcd"
   namespace = kubernetes_namespace.flux-admin.metadata[0].name
    values = [
     file("${path.cwd}/flux/values.yaml")
