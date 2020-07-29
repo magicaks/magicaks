@@ -3,7 +3,6 @@ out.plan
 .terraform
 *.tfvars
 .env
-Dockerfile
 ubuntu.yaml
 fabrikate-defs/generated/*
 fabrikate-defs/helm_repos/*
