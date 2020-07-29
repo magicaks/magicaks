@@ -43,12 +43,15 @@ If you use a different manifest generation system make sure you to run ``rbac-ge
 
 ### Software requirements
 
-This repo has been tested to work with OSX, Linux and Windows(on wsl). You need to install
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-- [fluxctl](https://docs.fluxcd.io/en/1.18.0/references/fluxctl.html)
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and logged in with a user who has enough permissions.
-- [Terraform](https://www.terraform.io/downloads.html)
-- curl
+This repo has been tested to work with OSX, Linux and Windows (on [WSL](https://docs.microsoft.com/en-us/windows/wsl/)). The provided [Docker development environment image](./utils/docker-dev-env/README.md) can be useful, especially for Windows users.
+
+You need to install:
+
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+* [fluxctl](https://docs.fluxcd.io/en/1.18.0/references/fluxctl.html)
+* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and logged in with a user who has enough permissions.
+* [Terraform](https://www.terraform.io/downloads.html)
+* curl
 
 ### One time setup
 
