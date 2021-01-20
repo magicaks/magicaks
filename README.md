@@ -9,9 +9,15 @@ This is an attempt to make things easier to adopt AKS for modern microservice ba
 
 Microservice apps need supporting components to do their job. There are many components out there which can get the job done and chosing among them can be a trip down a rabbit hole. In this repo we have made choices which are according to us the most suitable and make full use of Azure as a cloud computing platform. The driving force behind this automation is to use Azure to its fullest and relieve the user to focus instead on writing business logic.
 
+## Inspiration and history
+
+This project derives the concept for functional AKS cluster from [Project Bedrock](https://github.com/microsoft/bedrock). Bedrock provides patterns, implementation, and automation for operating production Kubernetes clusters based on a GitOps workflow, building on the best practices discovered while working with operationalizing Kubernetes clusters. MagicAKS extends the concepts in Bedrock to initialize a cluster with opinionated choice of technologies which are tigthly integrated. This level on integration provides for a smoother development experience with tooling, monitoring and other infrastructure services. While Bedrock provides guidance for Azure DevOps based release workflows, MagicAKS is focused on Github repositories and actions. Both projects use Fabrikate for specifying cluster software configs but Fabrikate is a replaceable component and one can use for example Kustomize or any other mainfest generation technology.
+
+Bedrock is designed to be general and has some concepts like rings are not reflected in this project at all. MagicAKS has a specific use case - making microservices based development on Azure easy and it excels at that.
+
 ## Architecture and components.
 
-This automation is by design not general purpose. It is supposed to make things easier by removing thinking of choices and instead get a working production grade kubernetes cluster so that developers can write business logic instead of spending time to figure out infrastructure concerns.
+This automation is by design not general purpose. It makes things easier by removing thinking of choices and instead get a working production grade kubernetes cluster so that developers can write business logic instead of spending time to figure out infrastructure concerns.
 
 As mentioned above the other goal of this automation is to use as much as possible plaform offerings on Azure and integrate them tightly at a suitable abstraction. This should make it easier for developers to assume presence of services which they need under a standard access model.
 
