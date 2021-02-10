@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-ENV MAGIC_AKS_GIT_URL "https://github.com/sachinkundu/akstf.git"
+ENV MAGIC_AKS_GIT_URL "https://github.com/magicaks/magicaks.git"
 ENV FLUX_VER "1.21.1"
 ENV TERRAFORM_VER "0.14.6"
 WORKDIR /root/
