@@ -6,6 +6,7 @@ WORKDIR /root/
 RUN apt-get update && \
     apt-get install -y curl && \
     apt-get install -y git && \
+    apt-get install -u unzip &&
     curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
     git clone ${MAGIC_AKS_GIT_URL}
 
