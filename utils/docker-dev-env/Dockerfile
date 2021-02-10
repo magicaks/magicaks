@@ -31,4 +31,4 @@ RUN curl -LO https://releases.hashicorp.com/terraform/${TERRAFORM_VER}/terraform
 RUN git clone ${MAGIC_AKS_GIT_URL}
 
 RUN echo 'alias ll="ls -l"' >> ~/.bashrc
-WORKDIR /root/akstf/
+WORKDIR /root/magicaks/
