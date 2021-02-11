@@ -25,13 +25,23 @@ This Docker image provides an isolated development environment with the required
 1. Now inside the running Docker container, list files to verify the image was properly created:
 
     ```plaintext
-    root@626be9d44688:~/akstf# ls -a
+    root@626be9d44688:~/magicaks# ll -a
     ````
 
     The files in the root of the cloned Magic AKS repository are listed:
 
     ```plaintext
-    .  ..  .git  .github  .gitignore  1-preprovision  2-provision-aks  3-postprovision  README.md  fabrikate-defs  utils
+    .  
+    ..  
+    .git  
+    .github  
+    .gitignore  
+    1-preprovision  
+    2-provision-aks  
+    3-postprovision  
+    README.md  
+    fabrikate-defs  
+    utils
     ```
 
 > Do not forget to login to Azure ("`az login`" command) and to select the correct subscriptuon ("`az account set --subscription <subscription ID>`" command) before running the setup scripts in the `utils` folder.
