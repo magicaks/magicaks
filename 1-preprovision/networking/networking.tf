@@ -158,7 +158,7 @@ resource "azurerm_firewall_network_rule_collection" "magicaksrules" {
     protocols = [
       "UDP"
     ]
-  }  
+  }
 }
 
 resource "azurerm_firewall_application_rule_collection" "AKS_Global_Required" {
