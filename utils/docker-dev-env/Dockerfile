@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 ENV MAGIC_AKS_GIT_URL "https://github.com/magicaks/magicaks.git"
 ENV FLUX_VER "1.21.1"
-ENV TERRAFORM_VER "0.14.6"
+ENV TERRAFORM_VER "0.14.2"
 WORKDIR /root/
 
 # Install tools and clone the Magic AKS repository
