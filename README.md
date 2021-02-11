@@ -1,5 +1,4 @@
-Magic AKS - Opinionated cluster config for microservices on Azure
-===================================================================
+# Magic AKS - Opinionated cluster config for microservices on Azure
 
 ## Introduction
 
@@ -15,7 +14,7 @@ This project derives the concept for functional AKS cluster from [Project Bedroc
 
 Bedrock is designed to be general and has some concepts like rings are not reflected in this project at all. MagicAKS has a specific use case - making microservices based development on Azure easy and it excels at that.
 
-## Architecture and components.
+## Architecture and components
 
 This automation is by design not general purpose. It makes things easier by removing thinking of choices and instead get a working production grade kubernetes cluster so that developers can write business logic instead of spending time to figure out infrastructure concerns.
 
@@ -36,6 +35,7 @@ When needed opensource tooling is integrated to provide components. For example 
 This automation is divided in 3 stages. We use terraform to bootstrap infrastructure and set up a gitOps connection in the cluster which then picks up kubernetes manifests for the declared state of the cluster.
 
 These manifests are in turn divided into two parts.
+
 1. Manifests which require admin permissions on the cluster to install.
 2. Manifests for workloads which run within a namespace and with limited credentials.
 
@@ -56,8 +56,9 @@ You need to install:
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 * [fluxctl](https://docs.fluxcd.io/en/1.18.0/references/fluxctl.html)
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and logged in with a user who has enough permissions.
-* [Terraform](https://www.terraform.io/downloads.html)
+* [Terraform](https://www.terraform.io/downloads.html) While different terraform versions might work, the automation has been tested with v0.14.2
 * curl
+* [jq](https://stedolan.github.io/jq/)
 
 ### One time setup
 
@@ -70,8 +71,10 @@ These steps need to be done once each time a new project is started.
 * Make another repo called k8sworkloads, a sample is [here](https://github.com/sachinkundu/k8sworkloads). This is where non-privileged workloads should be listed. This is tracked by flux gitOps non admin controller.
 
 ### Provisioning resources
+
 * Make a file called .env and put these values in it and fill those with suitable values.
-```
+
+```bash
 # Service principal used for creating cluster.
 export TF_VAR_client_secret=
 export TF_VAR_client_id=
@@ -89,21 +92,33 @@ export ARM_CLIENT_ID=$TF_VAR_client_id
 # Storage access key where the terraform state information is to be stored.
 export ARM_ACCESS_KEY=
 ```
+
 * Run ``source .env``
 * All terraform state information is stored in Azure storage. Credentials of this storage is provided using the exported variable ``ARM_ACCESS_KEY`` above. Please make sure you check ``main.tf`` in each step below to confirm the settings for state storage. Default values should also work fine.
 * There is a folder ``1-preprovision`` which contains terraform scripts to create those resources which need to be created just onetime. For example vnet, subnets azure firewall and its rules and keyvault etc. Check ``variables.tf`` and execute ``tf apply``. Please note if you create multiple clusters in the same vnet you need to then add the new subnet here and provide the route tables etc. Only one AKS cluster is allowed in one subnet.
-* To provision the cluster you need to step into ``2-provision-aks`` folder and run terraform as usual. This step will also download the credentials for interacting with the cluster which is required for the following steps. Grafana is also created at this step and connected to the log analytics workspace. Postgres is also created which acts as the storage backend for grafana.
+* To provision the cluster you need to step into ``2-provision-aks`` folder and run terraform as usual. Before executing this however, step into [./utils/grafana/](./utils/grafana/) and run the following commands to create a custom Grafana image.
+
+```bash
+export registry=registry_name_here
+az acr build -t $registry.azurecr.io/grafana:v1 -r $registry .
+```
+
+Now run terraform and wait for cluster to bootstrap.
+
+This step will also download the credentials for interacting with the cluster which is required for the following steps. Grafana is also created at this step and connected to the log analytics workspace. Postgres is also created which acts as the storage backend for Grafana.
+
 * After the cluster is provisioned we provision all support resources by stepping into ``3-postprovision`` and running terraform as usual. This will set up flux for admin and non admin workloads and eventually the desired state of the configs will be applied to your cluster. This is also where service bus etc will be created.
 
 ## What all is installed right now?
 
 1. AKS cluster.
+
 > 1. VMSS node pool with 1 - 5 nodes.
 > 2. Container insights in enabled.
-> 3. Pod security policies is enabled.
+> 3. ~~Pod security policies is enabled.~~ (AKS has deprecated PSP in favor of Azure Policy)
 > 4. RBAC is enabled.
-> 5. Kubenet as the network plugin
-> 6. Kubernetes version = 1.17
+> 5. Calico as the network plugin
+> 6. Kubernetes version = 1.19.7
 
 2. Flux gitOps operator
 3. Azure KeyVault
@@ -116,4 +131,5 @@ export ARM_ACCESS_KEY=
 10. Grafana connected to log analytics workspace of the cluster is running in Azure container instance backed by managed Postgresql Azure database.
 
 ## What is upcoming
+
 Check open issues at [Github Issues](https://github.com/sachinkundu/akstf/issues)

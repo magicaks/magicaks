@@ -1,9 +1,20 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=2.46.0"
+    }
+  }
+}
+
+# Configure the Microsoft Azure Provider
 provider "azurerm" {
-    version = "~>1.5"
+  features {}
 }
 
 terraform {
   backend "azurerm" {
+    resource_group_name  = "magicaks"
     container_name = "tfstate"
     key = "magicaks-cluster"
     storage_account_name = "longlasting"
@@ -20,26 +31,20 @@ resource "azurerm_postgresql_server" "clustersupportdb" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
-  sku_name = "GP_Gen5_2"
+  sku_name   = "GP_Gen5_4"
+  version    = "9.6"
+  storage_mb = 640000
 
-  storage_profile {
-    storage_mb            = 5120
-    backup_retention_days = 7
-    geo_redundant_backup  = "Disabled"
-    auto_grow             = "Enabled"
-  }
+  backup_retention_days        = 7
+  geo_redundant_backup_enabled = true
+  auto_grow_enabled            = true
 
-#   sku {
-#     capacity = 2
-#     family   = "Gen5"
-#     name     = "GP_Gen5_2"
-#     tier     = "GeneralPurpose"
-# }
+  public_network_access_enabled    = true
+  ssl_enforcement_enabled          = true
+  ssl_minimal_tls_version_enforced = "TLS1_2"
 
   administrator_login          = "psqladmin"
   administrator_login_password = var.cluster_support_db_admin_password
-  version                      = "9.5"
-  ssl_enforcement              = "Enabled"
 }
 
 resource "azurerm_postgresql_database" "grafana" {
@@ -131,4 +136,5 @@ module "grafana" {
   tenant_id = var.tenant_id
   client_id = var.client_id
   client_secret = var.client_secret
+  image_name = var.grafana_image_name
 }
