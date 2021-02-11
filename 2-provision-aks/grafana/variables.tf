@@ -8,10 +8,6 @@ variable "log_analytics_workspace_key" {}
 
 variable "grafana_admin_password" {}
 
-# variable "storage_account_name" {}
-# variable "storage_account_key" {}
-# variable "share_name" {}
-
 variable "db_host" {}
 variable "db_password" {}
 variable "db_name" {}
@@ -24,3 +20,5 @@ variable "subscription_id" {}
 variable "client_id" {}
 variable "tenant_id" {}
 variable "client_secret" {}
+
+variable "image_name" {}

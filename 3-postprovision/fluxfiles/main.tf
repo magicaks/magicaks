@@ -1,8 +1,6 @@
-provider "kubernetes" {
-}
-
 provider "helm" {
   kubernetes {
+    config_path = "~/.kube/config"
   }
 }
 
@@ -22,11 +20,11 @@ resource "kubernetes_namespace" "flux-admin" {
 
 resource "helm_release" "flux-admin" {
   name  = "flux-admin"
-  chart = "fluxcd/flux"
-  repository = "fluxcd"
+  chart = "flux"
+  repository = "https://charts.fluxcd.io/"
   namespace = kubernetes_namespace.flux-admin.metadata[0].name
    values = [
-    file("${path.cwd}/flux/values.yaml")
+    file("${path.cwd}/fluxfiles/values.yaml")
   ]
 
   
@@ -54,7 +52,7 @@ resource "helm_release" "flux-admin" {
 }
 
 data "external" "flux_admin_key" {
-  program = ["bash", "${path.cwd}/flux/fluxkey.sh"]
+  program = ["bash", "${path.cwd}/fluxfiles/fluxkey.sh"]
   query = {
     namespace = kubernetes_namespace.flux-admin.metadata[0].name
   }
@@ -83,11 +81,12 @@ resource "kubernetes_namespace" "flux-workloads" {
 
 resource "helm_release" "flux-workloads" {
   name  = "flux-workloads"
-  chart = "fluxcd/flux"
+  chart = "flux"
+  repository = "https://charts.fluxcd.io/"
   namespace = kubernetes_namespace.flux-workloads.metadata[0].name
    values = [
-    file("${path.cwd}/flux/values.yaml"),
-    file("${path.cwd}/flux/values-workloads.yaml")
+    file("${path.cwd}/fluxfiles/values.yaml"),
+    file("${path.cwd}/fluxfiles/values-workloads.yaml")
   ]
 
   
@@ -116,7 +115,7 @@ resource "helm_release" "flux-workloads" {
 }
 
 data "external" "flux_workload_key" {
-  program = ["bash", "${path.cwd}/flux/fluxkey.sh"]
+  program = ["bash", "${path.cwd}/fluxfiles/fluxkey.sh"]
   query = {
     namespace = kubernetes_namespace.flux-workloads.metadata[0].name
   }

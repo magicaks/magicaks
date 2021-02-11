@@ -60,8 +60,8 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
     
 
-    enable_pod_security_policy = true
-    kubernetes_version = "1.17.7"
+    enable_pod_security_policy = false
+    kubernetes_version = "1.19.7"
 
     node_resource_group = "${var.resource_group_name}-node-rg"
 

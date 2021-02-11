@@ -45,3 +45,4 @@ variable "grafana_admin_password" {}
 variable "acr_name" {}
 variable "key_vault_id" {}
 variable "cluster_support_db_admin_password" {}
+variable "grafana_image_name" {}

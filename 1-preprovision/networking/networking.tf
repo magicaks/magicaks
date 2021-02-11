@@ -8,7 +8,7 @@ resource "azurerm_virtual_network" "vnet" {
 resource "azurerm_subnet" "k8s-subnet" {
   name                 = "k8s-subnet"
   resource_group_name  = var.resource_group_name
-  address_prefix       = "10.1.2.0/24"
+  address_prefixes       = ["10.1.2.0/24"]
   virtual_network_name = azurerm_virtual_network.vnet.name
   service_endpoints = ["Microsoft.KeyVault", "Microsoft.ServiceBus", 
                        "Microsoft.Sql", "Microsoft.ContainerRegistry",
@@ -19,7 +19,7 @@ resource "azurerm_subnet" "acisubnet" {
   name                 = "acisubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefix       = "10.1.3.0/24"
+  address_prefixes       = ["10.1.3.0/24"]
 
   delegation {
     name = "delegation"
@@ -37,7 +37,7 @@ resource "azurerm_subnet" "adhocsubnet" {
   name                 = "adhocsubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefix       = "10.1.4.0/24"
+  address_prefixes       = ["10.1.4.0/24"]
 }
 
 resource "azurerm_network_profile" "aciprofile" {
@@ -62,9 +62,9 @@ resource "azurerm_route_table" "subnet_route_table" {
   disable_bgp_route_propagation = false
 
   route {
-    name           = "route1"
-    address_prefix = "10.1.2.0/24"
-    next_hop_type  = "VnetLocal"
+    name           = "internet"
+    address_prefix = "${azurerm_public_ip.fwip.ip_address}/32"
+    next_hop_type  = "Internet"
   }
   
   route {
@@ -72,10 +72,6 @@ resource "azurerm_route_table" "subnet_route_table" {
       address_prefix = "0.0.0.0/0"
       next_hop_type  = "VirtualAppliance"
       next_hop_in_ip_address = azurerm_firewall.magicaksfirewall.ip_configuration[0].private_ip_address
-  }
-
-  tags = {
-    environment = "Development"
   }
 }
 
@@ -88,7 +84,7 @@ resource "azurerm_subnet" "fwsubnet" {
   name                 = "AzureFirewallSubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefix       = "10.1.1.0/24"
+  address_prefixes       = ["10.1.1.0/24"]
 }
 
 resource "azurerm_public_ip" "fwip" {
@@ -119,78 +115,18 @@ resource "azurerm_firewall_network_rule_collection" "magicaksrules" {
   action              = "Allow"
 
   rule {
-    name = "tunnel front"
+    name = "TCP Rules"
 
     source_addresses = [
       "*",
     ]
 
     destination_ports = [
-      "9000", #tunnel front
-      "22",
-      "1194"
-    ]
-
-    destination_addresses = [
-      "*",
-    ]
-
-    protocols = [
-      "TCP",
-    ]
-  }
-
-  rule {
-    name = "https"
-
-    source_addresses = [
-      "*",
-    ]
-
-    destination_ports = [
-      "80",
-      "443"
-    ]
-
-    destination_addresses = [
-      "*",
-    ]
-
-    protocols = [
-      "TCP",
-    ]
-  }
-  
-  rule {
-    name = "udp"
-
-    source_addresses = [
-      "*",
-    ]
-
-    destination_ports = [
-      "53", # DNS
-      "123" #NTP
-    ]
-
-    destination_addresses = [
-      "*",
-    ]
-
-    protocols = [
-      "UDP",
-    ]
-  }
-  
-  rule {
-    name = "fileshare"
-
-    source_addresses = [
-      "*",
-    ]
-
-    destination_ports = [
+      "9000",
+      "443",
       "445",
+      "22",
+      "80"
     ]
 
     destination_addresses = [
@@ -201,6 +137,28 @@ resource "azurerm_firewall_network_rule_collection" "magicaksrules" {
       "TCP",
     ]
   }
+
+  rule {
+    name = "UDP Rules"
+
+    source_addresses = [
+      "*",
+    ]
+
+    destination_ports = [
+      "1194",
+      "123",
+      "53"
+    ]
+
+    destination_addresses = [
+      "*",
+    ]
+
+    protocols = [
+      "UDP"
+    ]
+  }  
 }
 
 resource "azurerm_firewall_application_rule_collection" "AKS_Global_Required" {
@@ -217,117 +175,7 @@ resource "azurerm_firewall_application_rule_collection" "AKS_Global_Required" {
       "*",
     ]
 
-    target_fqdns = [
-        "*.hcp.${var.location}.azmk8s.io",
-        "*.tun.${var.location}.azmk8s.io",
-        "aksrepos.azurecr.io",
-        "*blob.core.windows.net",
-        "mcr.microsoft.com",
-        "*cdn.mscr.io",
-        "*.data.mcr.microsoft.com",
-        "management.azure.com",
-        "login.microsoftonline.com",
-        "ntp.ubuntu.com",
-        "packages.microsoft.com",
-        "acs-mirror.azureedge.net"
-    ]
-
-    protocol {
-      port = "443"
-      type = "Https"
-    }
-
-    protocol {
-      port = "80"
-      type = "Http"
-    }
-  }
-}
-
-resource "azurerm_firewall_application_rule_collection" "AKS_Cloud_Specific_Required" {
-  name                = "AKS_Cloud_Specific_Required"
-  azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = var.resource_group_name
-  priority            = 200
-  action              = "Allow"
-
-  rule {
-    name = "required"
-
-    source_addresses = [
-      "*",
-    ]
-
-    target_fqdns = [
-      "*.hcp.${var.location}.azmk8s.io",
-      "*.tun.${var.location}.azmk8s.io"
-    ]
-
-    protocol {
-      port = "443"
-      type = "Https"
-    }
-  }
-}
-
-resource "azurerm_firewall_application_rule_collection" "UbuntuUpdates" {
-  name                = "UbuntuUpdates"
-  azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = var.resource_group_name
-  priority            = 300
-  action              = "Allow"
-
-  rule {
-    name = "ubuntu"
-
-    source_addresses = [
-      "*",
-    ]
-
-    target_fqdns = [
-      "security.ubuntu.com",
-      "azure.archive.ubuntu.com",
-      "changelogs.ubuntu.com"
-    ]
-
-    protocol {
-      port = "443"
-      type = "Https"
-    }
-
-    protocol {
-      port = "80"
-      type = "Http"
-    }
-  }
-}
-
-resource "azurerm_firewall_application_rule_collection" "AKS_Azure_Monitor_Required" {
-  name                = "AKS_Azure_Monitor_Required"
-  azure_firewall_name = azurerm_firewall.magicaksfirewall.name
-  resource_group_name = var.resource_group_name
-  priority            = 400
-  action              = "Allow"
-
-  rule {
-    name = "azure_monitor"
-
-    source_addresses = [
-      "*",
-    ]
-
-    target_fqdns = [
-      "dc.services.visualstudio.com",
-      "*.ods.opinsights.azure.com",
-      "*.oms.opinsights.azure.com",
-      "*.microsoftonline.com",
-      "*.monitoring.azure.com"
-    ]
-
-    protocol {
-      port = "443"
-      type = "Https"
-    }
+    fqdn_tags = [ "AzureKubernetesService" ]
   }
 }
 
