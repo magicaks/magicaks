@@ -53,7 +53,7 @@ This repo has been tested to work with OSX, Linux and Windows (on [WSL](https://
 
 You need to install:
 
-* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) min version 1.18.1
 * [fluxctl](https://docs.fluxcd.io/en/1.18.0/references/fluxctl.html)
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and logged in with a user who has enough permissions.
 * [Terraform](https://www.terraform.io/downloads.html) While different terraform versions might work, the automation has been tested with v0.14.2
@@ -64,7 +64,10 @@ You need to install:
 
 These steps need to be done once each time a new project is started.
 
-* Generate AAD server and client applications by running the file ``utils/create-rbac-apps.sh``. Please notes that this script can only be run by **owner** of the active directory. You can use the same credentials for all projects so this is not needed per project but once for each Active Directory used.
+* Run ``az ad group create --display-name magicaksadmins --mail-nickname magicaksadmins``. Note the object id of the group as it is used as an input variable when creating the AKS cluster.
+
+> **NOTE:** This command can only be run by **owner** of the active directory. This is not needed per project but once for each active directory used. If you are not the owner of the AAD but would still like to try MagicAKS, [create a personal AAD](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-access-create-new-tenant). To run the command above you need to be logged into the tenant where the RBAC would be managed from. You can use ``az login --tenant <<tenand_id>>`` to login into a specific tenant.
+
 * Extract the folder ``fabrikate-defs`` and push these files into a new repo. This is the admin HLD repo. Make sure to read README.md in that folder to do the configs required to set up AAD and RBAC setup.
 * Make a new repo called k8smanifests. this will be your admin manifest repo as tracked by flux gitOps admin controller.
 * Setup github actions pipeline using ``.github/workflows/generate-manifests-gh.yaml`` as the sample and use the above repo as the repo to write the generated k8s manifests.

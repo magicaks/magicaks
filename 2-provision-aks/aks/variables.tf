@@ -14,10 +14,8 @@ variable cluster_name { }
 
 variable "log_analytics_workspace_id" {}
 
-variable "aad_client_appid" {}
-variable "aad_server_appid" {}
-variable "aad_server_app_secret" {}
 variable "aad_tenant_id" {}
 variable "k8s_subnet_id" {}
 variable "client_id" {}
-variable "client_secret" {} 
+variable "client_secret" {}
+variable "admin_group_object_ids" {}

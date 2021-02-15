@@ -99,10 +99,8 @@ module "aks" {
   client_id = var.client_id
   client_secret = var.client_secret
   
-  aad_client_appid = var.aad_client_appid
-  aad_server_appid = var.aad_server_appid
-  aad_server_app_secret = var.aad_server_app_secret
-  aad_tenant_id =var.aad_tenant_id
+  admin_group_object_ids = var.admin_group_object_ids
+  aad_tenant_id = var.aad_tenant_id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.k8s.id
 }
 
