@@ -32,9 +32,7 @@ variable cluster_name {
     default = "magicaks"
 }
 
-variable "aad_client_appid" { }
-variable "aad_server_appid" { }
-variable "aad_server_app_secret" { }
+variable "admin_group_object_ids" { }
 variable "aad_tenant_id" { }
 
 variable "k8s_subnet_id" { }
