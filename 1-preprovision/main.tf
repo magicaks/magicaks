@@ -30,6 +30,7 @@ module "networking" {
   source = "./networking"
   location = var.location
   resource_group_name = azurerm_resource_group.longlasting.name
+  cluster_name = var.cluster_name
 }
 
 module "acr" {
