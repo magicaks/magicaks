@@ -68,6 +68,8 @@ These steps need to be done once each time a new project is started.
 
 > **NOTE:** This command can only be run by **owner** of the active directory. This is not needed per project but once for each active directory used. If you are not the owner of the AAD but would still like to try MagicAKS, [create a personal AAD](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-access-create-new-tenant). To run the command above you need to be logged into the tenant where the RBAC would be managed from. You can use ``az login --tenant <<tenand_id>>`` to login into a specific tenant.
 
+> **NOTE:** If the new Azure Active Directory tenant does not have a subscription, then run instead ``az login --tenant <<tenand_id>> --allow-no-subscriptions``.
+
 * Extract the folder ``fabrikate-defs`` and push these files into a new repo. This is the admin HLD repo. Make sure to read README.md in that folder to do the configs required to set up AAD and RBAC setup.
 * Make a new repo called k8smanifests. this will be your admin manifest repo as tracked by flux gitOps admin controller.
 * Setup github actions pipeline using ``.github/workflows/generate-manifests-gh.yaml`` as the sample and use the above repo as the repo to write the generated k8s manifests.
