@@ -38,6 +38,7 @@ module "acr" {
   location = var.location
   resource_group_name = azurerm_resource_group.longlasting.name
   subnet_id = module.networking.k8s_subnet_id
+  cluster_name = var.cluster_name
 }
 
 module "kv" {

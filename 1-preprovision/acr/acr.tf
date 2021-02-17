@@ -1,5 +1,5 @@
 resource "azurerm_container_registry" "acr" {
-  name                     = "magicaksregistry"
+  name                     = "${var.cluster_name}registry"
   resource_group_name      = var.resource_group_name
   location                 = var.location
   sku                      = "Premium"
