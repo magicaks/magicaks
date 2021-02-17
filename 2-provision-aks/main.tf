@@ -96,9 +96,6 @@ module "aks" {
   
   k8s_subnet_id = var.k8s_subnet_id
   
-  client_id = var.client_id
-  client_secret = var.client_secret
-  
   admin_group_object_ids = var.admin_group_object_ids
   aad_tenant_id = var.aad_tenant_id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.k8s.id
@@ -132,7 +129,9 @@ module "grafana" {
   # Information for connecting to the cluster from grafana.
   subscription_id = var.subscription_id
   tenant_id = var.tenant_id
-  client_id = var.client_id
-  client_secret = var.client_secret
+  
+  client_id = var.monitoring_reader_sp_client_id
+  client_secret = var.monitoring_reader_sp_client_secret
+  
   image_name = var.grafana_image_name
 }
