@@ -1,5 +1,0 @@
-config:
-subcomponents:
-  akv2k8s-kvcontroller:
-    namespace: admin
-    injectNamespace: true

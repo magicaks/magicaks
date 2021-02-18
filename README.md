@@ -70,37 +70,54 @@ These steps need to be done once each time a new project is started.
 
 > **NOTE:** If the new Azure Active Directory tenant does not have a subscription, then run instead ``az login --tenant <<tenand_id>> --allow-no-subscriptions``.
 
-* Extract the folder ``fabrikate-defs`` and push these files into a new repo. This is the admin HLD repo. Make sure to read README.md in that folder to do the configs required to set up AAD and RBAC setup.
-* Make a new repo called k8smanifests. this will be your admin manifest repo as tracked by flux gitOps admin controller.
-* Setup github actions pipeline using ``.github/workflows/generate-manifests-gh.yaml`` as the sample and use the above repo as the repo to write the generated k8s manifests.
-* Make another repo called k8sworkloads, a sample is [here](https://github.com/sachinkundu/k8sworkloads). This is where non-privileged workloads should be listed. This is tracked by flux gitOps non admin controller.
+* Fork [repo](https://github.com/sachinkundu/fabrikate-defs). This will be your Fabrikate High Level Definition(HLD) repo. In the repo there is a README which explains on how to set up RBAC for your cluster. Finish the steps there before continuing further.
+* Fork [repo](https://github.com/magicaks/k8sworkloads). This is user workloads manifest repo where non-privileged workloads should be listed. This is tracked by flux gitOps non admin controller.
 
 ### Provisioning resources
+
+* Create a service principal which terraform can use for deploying resources. You can create a service principal by using
+
+    ``az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/SUBSCRIPTION_ID -n "terraform-magicaks"``
+
+    where terraform-magicaks would be the name of the service principal. You can chose another name if you like.
+
+* Create a service principal which grafana can use for talking to log analytics backend. This service principal is restricted to be a **Monitoring Reader**. You can create a service principal using
+
+    ``az ad sp create-for-rbac -n "magicaks-grafana" --role "Monitoring Reader"``
+
+* Terraform stores state config in Azure Storage. You need to provide access key to this storage in the .env file created below. If you don't have a storage account you can create one using
+
+    ``az storage account create --name <<name>> --resource-group <<group_name>>``
+
+> **NOTE** Before running terraform always verify that Azure Storage Backend has been set up correctly and that the chosen container exists. Otherwise terraform run will fail.
 
 * Make a file called .env and put these values in it and fill those with suitable values.
 
 ```bash
-# Service principal used for creating cluster.
+# Service principal by terraform.
 export TF_VAR_client_secret=
 export TF_VAR_client_id=
 # Github personal access token
 export TF_VAR_pat=
 export TF_VAR_tenant_id=
-# Azure AAD server application secret.
-export TF_VAR_aad_server_app_secret=
 # Grafana password
 export TF_VAR_grafana_admin_password=
+
 export ARM_SUBSCRIPTION_ID=
 export ARM_TENANT_ID=$TF_VAR_tenant_id
 export ARM_CLIENT_SECRET=$TF_VAR_client_secret
 export ARM_CLIENT_ID=$TF_VAR_client_id
+
 # Storage access key where the terraform state information is to be stored.
 export ARM_ACCESS_KEY=
 ```
 
 * Run ``source .env``
-* All terraform state information is stored in Azure storage. Credentials of this storage is provided using the exported variable ``ARM_ACCESS_KEY`` above. Please make sure you check ``main.tf`` in each step below to confirm the settings for state storage. Default values should also work fine.
-* There is a folder ``1-preprovision`` which contains terraform scripts to create those resources which need to be created just onetime. For example vnet, subnets azure firewall and its rules and keyvault etc. Check ``variables.tf`` and execute ``tf apply``. Please note if you create multiple clusters in the same vnet you need to then add the new subnet here and provide the route tables etc. Only one AKS cluster is allowed in one subnet.
+
+> **NOTE** Terraform requires variables as input. These can be provided either interactively or if there is a terraform.tfvars file present then terraform will detect it and use variable names from there. Each of the folders below have a terraform.tfvars.tmpl file. If you want to use terraform.tfvars support you can copy terraform.tfvars.tmpl to terraform.tfvars and fill the values.
+
+* There is a folder ``1-preprovision`` which contains terraform scripts to create those resources which need to be created just onetime. For example vnet, subnets azure firewall and its rules and keyvault etc. After you have verified all variable names you can exectute terraform.
+
 * To provision the cluster you need to step into ``2-provision-aks`` folder and run terraform as usual. Before executing this however, step into [./utils/grafana/](./utils/grafana/) and run the following commands to create a custom Grafana image.
 
 ```bash
