@@ -9,7 +9,7 @@ terraform {
 
 provider "kubernetes" {
   config_path    = "~/.kube/config"
-  config_context = "magicaks-admin"
+  config_context = "${var.cluster_name}-admin"
 }
 
 # Configure the Microsoft Azure Provider
