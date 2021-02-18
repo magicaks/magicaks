@@ -70,7 +70,7 @@ These steps need to be done once each time a new project is started.
 
 > **NOTE:** If the new Azure Active Directory tenant does not have a subscription, then run instead ``az login --tenant <<tenand_id>> --allow-no-subscriptions``.
 
-* Fork [repo](https://github.com/sachinkundu/fabrikate-defs). This will be your Fabrikate High Level Definition(HLD) repo. In the repo there is a README which explains on how to set up RBAC for your cluster. Finish the steps there before continuing further.
+* Fork [repo](https://github.com/magicaks/fabrikate-defs). This will be your Fabrikate High Level Definition(HLD) repo. In the repo there is a README which explains on how to set up RBAC for your cluster. Finish the steps there before continuing further.
 * Fork [repo](https://github.com/magicaks/k8sworkloads). This is user workloads manifest repo where non-privileged workloads should be listed. This is tracked by flux gitOps non admin controller.
 
 ### Provisioning resources
@@ -94,7 +94,7 @@ These steps need to be done once each time a new project is started.
 * Make a file called .env and put these values in it and fill those with suitable values.
 
 ```bash
-# Service principal by terraform.
+# Service principal used by terraform.
 export TF_VAR_client_secret=
 export TF_VAR_client_id=
 # Github personal access token
@@ -114,7 +114,7 @@ export ARM_ACCESS_KEY=
 
 * Run ``source .env``
 
-* Make sure you are logged into azure command line ``az`` and the right subscription is selected.
+* Make sure you are logged into azure command line ``az`` and have chosen the subscription where the resources should be deployed.
 
 > **NOTE** Terraform requires variables as input. These can be provided either interactively or if there is a terraform.tfvars file present then terraform will detect it and use variable names from there. Each of the folders below have a terraform.tfvars.tmpl file. If you want to use terraform.tfvars support you can copy terraform.tfvars.tmpl to terraform.tfvars and fill the values.
 
