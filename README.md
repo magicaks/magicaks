@@ -77,7 +77,7 @@ These steps need to be done once each time a new project is started.
 
 * Create a service principal which terraform can use for deploying resources. You can create a service principal by using
 
-    ``az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/SUBSCRIPTION_ID -n "terraform-magicaks"``
+    ``az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/SUBSCRIPTION_ID" -n "terraform-magicaks"``
 
     where terraform-magicaks would be the name of the service principal. You can chose another name if you like.
 
