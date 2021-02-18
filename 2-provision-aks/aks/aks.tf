@@ -24,9 +24,9 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         max_count = 5
     }
 
-    service_principal {
-        client_id     = var.client_id
-        client_secret = var.client_secret
+    identity {
+        type = "UserAssigned"
+        user_assigned_identity_id = "/subscriptions/b6a69b21-5dea-4475-9cd5-e9f2f8eb1e27/resourcegroups/magicaks/providers/Microsoft.ManagedIdentity/userAssignedIdentities/magicaksmsi"
     }
 
     addon_profile {

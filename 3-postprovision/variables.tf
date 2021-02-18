@@ -1,8 +1,8 @@
-variable resource_group_name { default = "magicaks" }
-variable cluster_name { }
-variable location { default = "West Europe" }
+variable resource_group_name {}
+variable cluster_name {}
+variable location {}
 
-variable ghuser { default = "magicaks" }
+variable ghuser {}
 variable k8s_manifest_repo {}
 variable k8s_workload_repo {}
 variable pat {}
@@ -12,6 +12,6 @@ variable client_id {}
 
 variable k8s_subnet_id {}
 
-variable app_name { }
+variable app_name {}
 
 variable key_vault_id {}
