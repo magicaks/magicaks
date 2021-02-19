@@ -4,5 +4,4 @@ out.plan
 *.tfvars
 .env
 ubuntu.yaml
-fabrikate-defs/generated/*
-fabrikate-defs/helm_repos/*
+

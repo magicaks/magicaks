@@ -1,3 +1,6 @@
+data "azurerm_client_config" "current" {
+}
+
 resource "azurerm_key_vault" "keyvault" {
   name                        = "${var.cluster_name}-keyvault"
   location                    = var.location
@@ -25,7 +28,7 @@ resource "azurerm_key_vault" "keyvault" {
     ]
 
     secret_permissions = [
-      "get", "set"
+      "get", "set", "recover", "purge"
     ]
 
     storage_permissions = [
@@ -36,14 +39,14 @@ resource "azurerm_key_vault" "keyvault" {
   # Access policy for this particular TF run to insert the secret into kv
   access_policy {
     tenant_id = var.tenant_id
-    object_id = "3fe3253a-c76e-42aa-ac6a-88a31f287403"
+    object_id = data.azurerm_client_config.current.object_id
 
     key_permissions = [
       "get", "create", "delete"
     ]
 
     secret_permissions = [
-      "get", "set", "delete"
+      "get", "set", "delete", "recover", "purge"
     ]
 
     storage_permissions = [

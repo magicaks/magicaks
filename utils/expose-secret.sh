@@ -4,7 +4,7 @@ secret_name=$1
 kv=$2
 namespace=$3
 cat <<EOF | kubectl apply -f -
-apiVersion: spv.no/v1alpha1
+apiVersion: spv.no/v1
 kind: AzureKeyVaultSecret
 metadata:
   name: $secret_name
