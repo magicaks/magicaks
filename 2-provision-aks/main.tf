@@ -99,6 +99,7 @@ module "aks" {
   admin_group_object_ids = var.admin_group_object_ids
   aad_tenant_id = var.aad_tenant_id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.k8s.id
+  user_assigned_identity_resource_id = var.user_assigned_identity_resource_id
 }
 
 module "grafana" {
