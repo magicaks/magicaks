@@ -45,3 +45,4 @@ variable "cluster_support_db_admin_password" {}
 variable "grafana_image_name" {}
 variable "monitoring_reader_sp_client_id" {}
 variable "monitoring_reader_sp_client_secret" {}
+variable "user_assigned_identity_resource_id" {}

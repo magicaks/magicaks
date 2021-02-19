@@ -26,7 +26,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
     identity {
         type = "UserAssigned"
-        user_assigned_identity_id = "/subscriptions/b6a69b21-5dea-4475-9cd5-e9f2f8eb1e27/resourcegroups/magicaks/providers/Microsoft.ManagedIdentity/userAssignedIdentities/magicaksmsi"
+        user_assigned_identity_id = var.user_assigned_identity_resource_id
     }
 
     addon_profile {

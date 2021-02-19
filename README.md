@@ -129,6 +129,20 @@ export registry=registry_name_here
 az acr build -t $registry.azurecr.io/grafana:v1 -r $registry .
 ```
 
+MagicAKS creates a managed identity cluster. To create an identity follow the steps below
+
+```bash
+export RG_WHERE_NETWORK_EXISTS=magicaks-longlasting
+export RG_WHERE_CLUSTER_EXISTS=magicaks
+az identity create --name magicaksmsi --resource-group $RG_WHERE_CLUSTER_EXISTS
+MSI_CLIENT_ID=$(az identity show -n magicaksmsi -g $RG_WHERE_CLUSTER_EXISTS -o json | jq -r ".clientId")
+MSI_RESOURCE_ID=$(az identity show -n magicaksmsi -g $RG_WHERE_CLUSTER_EXISTS -o json | jq -r ".id")
+az role assignment create --role "Network Contributor" --assignee $MSI_CLIENT_ID -g $RG_WHERE_NETWORK_EXISTS
+az role assignment create --role "Virtual Machine Contributor" --assignee $MSI_CLIENT_ID -g $RG_WHERE_NETWORK_EXISTS
+```
+
+``MSI_RESOURCE_ID`` is provided as a variable to terraform when creating the cluster.
+
 Now run terraform and wait for cluster to bootstrap.
 
 This step will also download the credentials for interacting with the cluster which is required for the following steps. Grafana is also created at this step and connected to the log analytics workspace. Postgres is also created which acts as the storage backend for Grafana.
