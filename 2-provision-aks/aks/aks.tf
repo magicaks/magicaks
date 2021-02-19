@@ -24,9 +24,9 @@ resource "azurerm_kubernetes_cluster" "k8s" {
         max_count = 5
     }
 
-    service_principal {
-        client_id     = var.client_id
-        client_secret = var.client_secret
+    identity {
+        type = "UserAssigned"
+        user_assigned_identity_id = var.user_assigned_identity_resource_id
     }
 
     addon_profile {
@@ -42,13 +42,13 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
     role_based_access_control {
         azure_active_directory {
-            client_app_id     = var.aad_client_appid
-            server_app_id     = var.aad_server_appid
-            server_app_secret = var.aad_server_app_secret
-            tenant_id         = var.aad_tenant_id
+            managed = true
+            tenant_id = var.aad_tenant_id
+            admin_group_object_ids = [ var.admin_group_object_ids ]
         }
         enabled = true
-    }    
+    }
+
     network_profile {
         network_plugin = "kubenet"
         network_policy = "calico"
