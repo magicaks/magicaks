@@ -129,7 +129,7 @@ export registry=registry_name_here
 az acr build -t $registry.azurecr.io/grafana:v1 -r $registry .
 ```
 
-MagicAKS creates a managed identity cluster in the ressource group with other long lasting resources, so the permissions remains even if the cluster is recreated. To create an identity follow the steps below
+MagicAKS creates a managed identity cluster. Identity for this cluster is created in the resource group with other long lasting resources, so the permissions remains even if the cluster is recreated. To create an identity follow the steps below:
 
 ```bash
 export RG_WHERE_NETWORK_EXISTS=magicaks-longlasting
