@@ -27,7 +27,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_postgresql_server" "clustersupportdb" {
-  name                = "cluster-support-db"
+  name                = var.cluster_database_name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
