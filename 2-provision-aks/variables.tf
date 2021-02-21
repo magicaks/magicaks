@@ -1,33 +1,23 @@
 variable "subscription_id" {}
 variable "tenant_id" {}
 
-variable resource_group_name {
-    default = "k8s"
-}
+variable resource_group_name {}
 
-variable location {
-    default = "West Europe"
-}
+variable location {}
 
 variable log_analytics_workspace_name {
     default = "k8sLogAnalyticsWorkspace"
 }
 
-variable log_analytics_workspace_location {
-    default = "westeurope"
-}
+variable log_analytics_workspace_location {}
 
 variable log_analytics_workspace_sku {
     default = "PerGB2018"
 }
 
-variable "dns_prefix" {
-    default = "magicaks"
-}
+variable "dns_prefix" {}
 
-variable cluster_name {
-    default = "magicaks"
-}
+variable cluster_name {}
 
 variable "admin_group_object_ids" { }
 variable "aad_tenant_id" { }
@@ -45,4 +35,6 @@ variable "cluster_support_db_admin_password" {}
 variable "grafana_image_name" {}
 variable "monitoring_reader_sp_client_id" {}
 variable "monitoring_reader_sp_client_secret" {}
+variable "cluster_database_name" {}
+
 variable "user_assigned_identity_resource_id" {}
