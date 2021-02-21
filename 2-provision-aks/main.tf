@@ -27,7 +27,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_postgresql_server" "clustersupportdb" {
-  name                = "cluster-support-db"
+  name                = var.cluster_database_name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -68,7 +68,7 @@ resource "random_id" "log_analytics_workspace_name_suffix" {
 
 resource "azurerm_log_analytics_workspace" "k8s" {
     name                = "${var.log_analytics_workspace_name}-${random_id.log_analytics_workspace_name_suffix.dec}"
-    location            = var.log_analytics_workspace_location
+    location            = var.location
     resource_group_name = azurerm_resource_group.rg.name
     sku                 = var.log_analytics_workspace_sku
 }
@@ -92,7 +92,7 @@ module "aks" {
   resource_group_name = azurerm_resource_group.rg.name
   location = var.location
   cluster_name = var.cluster_name
-  dns_prefix = var.dns_prefix
+  dns_prefix = var.cluster_name
   
   k8s_subnet_id = var.k8s_subnet_id
   
@@ -100,6 +100,16 @@ module "aks" {
   aad_tenant_id = var.aad_tenant_id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.k8s.id
   user_assigned_identity_resource_id = var.user_assigned_identity_resource_id
+}
+
+resource "azurerm_key_vault_access_policy" "clustermsiread" {
+  key_vault_id = var.key_vault_id
+  tenant_id    = var.tenant_id
+  object_id    =  module.aks.object_id
+
+  secret_permissions = [
+    "Get",
+  ]
 }
 
 module "grafana" {

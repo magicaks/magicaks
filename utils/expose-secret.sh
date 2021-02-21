@@ -1,7 +1,9 @@
 #!/bin/bash
 
 secret_name=$1
-kv=$2
+kvid=$2
+readarray -d / -t splitNoIFS<<< "$kvid"
+kv=${splitNoIFS[-1]}
 namespace=$3
 cat <<EOF | kubectl apply -f -
 apiVersion: spv.no/v1
