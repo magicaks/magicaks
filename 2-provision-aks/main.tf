@@ -14,7 +14,7 @@ provider "azurerm" {
 
 terraform {
   backend "azurerm" {
-    resource_group_name  = "magicaks"
+    resource_group_name  = "longlasting"
     container_name = "tfstate"
     key = "magicaks-cluster"
     storage_account_name = "longlasting"
@@ -24,6 +24,21 @@ terraform {
 resource "azurerm_resource_group" "rg" {
     name     = var.resource_group_name
     location = var.location
+}
+
+resource "azurerm_policy_assignment" "basek8spolicy" {
+  name                 = "basek8spolicy"
+  scope                = azurerm_resource_group.rg.id
+  policy_definition_id = "/providers/Microsoft.Authorization/policySetDefinitions/a8640138-9b0a-4a28-b8cb-1666c838647d"
+  description          = ""
+  display_name         = "Kubernetes cluster pod security baseline standards for Linux-based workloads"
+  parameters = <<PARAMETERS
+{
+  "excludedNamespaces": {
+    "value": ["kube-system","gatekeeper-system","admin"]
+  }
+}
+PARAMETERS
 }
 
 resource "azurerm_postgresql_server" "clustersupportdb" {

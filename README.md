@@ -77,7 +77,11 @@ These steps need to be done once each time a new project is started.
 
 * Create a service principal which terraform can use for deploying resources. You can create a service principal by using
 
-    ``az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/SUBSCRIPTION_ID" -n "terraform-magicaks"``
+    ```bash
+    az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/SUBSCRIPTION_ID" -n "terraform-magicaks"
+    OBJECT_ID=$(az ad sp show --id app_id_from_above --query objectId)
+    az role assignment create --assignee-object-id $OBJECT_ID --role "Resource Policy Contributor" # Needed to assign Azure Policy to cluster.
+    ```
 
     where terraform-magicaks would be the name of the service principal. You can chose another name if you like.
 
@@ -129,17 +133,18 @@ export registry=registry_name_here
 az acr build -t $registry.azurecr.io/grafana:v1 -r $registry .
 ```
 
-MagicAKS creates a managed identity cluster. To create an identity follow the steps below
+MagicAKS creates a managed identity cluster. Identity for this cluster is created in the resource group with other long lasting resources, so the permissions remains even if the cluster is recreated. To create an identity follow the steps below:
 
 ```bash
 export RG_WHERE_NETWORK_EXISTS=magicaks-longlasting
-export RG_WHERE_CLUSTER_EXISTS=magicaks
-az identity create --name magicaksmsi --resource-group $RG_WHERE_CLUSTER_EXISTS
-MSI_CLIENT_ID=$(az identity show -n magicaksmsi -g $RG_WHERE_CLUSTER_EXISTS -o json | jq -r ".clientId")
+az identity create --name magicaksmsi --resource-group $RG_WHERE_NETWORK_EXIST
+MSI_CLIENT_ID=$(az identity show -n magicaksmsi -g $RG_WHERE_NETWORK_EXIST -o json | jq -r ".clientId")
 MSI_RESOURCE_ID=$(az identity show -n magicaksmsi -g $RG_WHERE_CLUSTER_EXISTS -o json | jq -r ".id")
 az role assignment create --role "Network Contributor" --assignee $MSI_CLIENT_ID -g $RG_WHERE_NETWORK_EXISTS
 az role assignment create --role "Virtual Machine Contributor" --assignee $MSI_CLIENT_ID -g $RG_WHERE_NETWORK_EXISTS
 ```
+
+> **NOTE** MagicAKS is not creating a system assigned managed identity, due to current [limitations](https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#create-an-aks-cluster-with-managed-identities) of self managed VNet and static IP addres outside the MC_ resource group.
 
 ``MSI_RESOURCE_ID`` is provided as a variable to terraform when creating the cluster.
 
