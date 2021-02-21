@@ -130,8 +130,9 @@ module "grafana" {
   grafana_admin_password = var.grafana_admin_password
   
   db_host = azurerm_postgresql_server.clustersupportdb.fqdn
-  db_password = var.cluster_support_db_admin_password
   db_name = azurerm_postgresql_database.grafana.name
+  db_user = "${azurerm_postgresql_server.clustersupportdb.administrator_login}@${azurerm_postgresql_server.clustersupportdb.name}"
+  db_password = var.cluster_support_db_admin_password
   
   # delegated subnet for aci, hence a network profile
   aci_network_profile_id = var.aci_network_profile_id

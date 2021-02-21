@@ -9,6 +9,7 @@ variable "log_analytics_workspace_key" {}
 variable "grafana_admin_password" {}
 
 variable "db_host" {}
+variable "db_user" {}
 variable "db_password" {}
 variable "db_name" {}
 
