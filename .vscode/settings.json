@@ -18,6 +18,7 @@
         "operationalizing",
         "postprovision",
         "preprovision",
-        "rbac"
+        "rbac",
+        "sworkloads"
     ]
 }

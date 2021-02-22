@@ -45,7 +45,7 @@ module flux {
   pat = var.pat
 }
 
-module "servicebus" {  
+module "servicebus" {
   source = "./servicebus"
   resource_group_name = var.resource_group_name
   cluster_name = var.cluster_name
