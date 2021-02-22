@@ -48,7 +48,6 @@ module "kv" {
   k8s_subnet_id = module.networking.k8s_subnet_id
   cluster_name = var.cluster_name
   tenant_id = var.tenant_id
-  client_id = var.client_id
 }
 
 resource "azurerm_key_vault_secret" "registryusername" {

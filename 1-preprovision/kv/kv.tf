@@ -18,24 +18,6 @@ resource "azurerm_key_vault" "keyvault" {
     virtual_network_subnet_ids = [var.k8s_subnet_id]
   }
 
-  # Access policy for service principal credentials on the cluster to access kv.
-  access_policy {
-    tenant_id = var.tenant_id
-    object_id = var.client_id
-
-    key_permissions = [
-      "get", "create"
-    ]
-
-    secret_permissions = [
-      "get", "set", "recover", "purge"
-    ]
-
-    storage_permissions = [
-      "get", "set"
-    ]
-  }
-
   # Access policy for this particular TF run to insert the secret into kv
   access_policy {
     tenant_id = var.tenant_id
