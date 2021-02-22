@@ -51,7 +51,7 @@ resource "azurerm_container_group" "grafana" {
                               "CLIENT_ID" = var.client_id
                               "LOG_ANALYTICS_WORKSPACE" = var.log_analytics_workspace_id
                               "GF_DATABASE_TYPE" = "postgres"
-                              "GF_DATABASE_USER" = "psqladmin@cluster-support-db"
+                              "GF_DATABASE_USER" = var.db_user
                               "GF_DATABASE_HOST" = "${var.db_host}:5432"
                               "GF_DATABASE_PASSWORD" = var.db_password
                               "GF_DATABASE_NAME" = var.db_name
