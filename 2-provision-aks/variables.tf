@@ -1,5 +1,8 @@
-variable "subscription_id" {}
-variable "tenant_id" {}
+variable resource_group_name {}
+variable location {}
+variable subscription_id {}
+variable tenant_id {}
+variable aad_tenant_id { }
 
 variable resource_group_name {}
 

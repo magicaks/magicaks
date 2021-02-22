@@ -98,19 +98,10 @@ These steps need to be done once each time a new project is started.
 * Make a file called .env and put these values in it and fill those with suitable values.
 
 ```bash
-# Service principal used by terraform.
-export TF_VAR_client_secret=
-export TF_VAR_client_id=
-# Github personal access token
-export TF_VAR_pat=
-export TF_VAR_tenant_id=
-# Grafana password
-export TF_VAR_grafana_admin_password=
-
 export ARM_SUBSCRIPTION_ID=
-export ARM_TENANT_ID=$TF_VAR_tenant_id
-export ARM_CLIENT_SECRET=$TF_VAR_client_secret
-export ARM_CLIENT_ID=$TF_VAR_client_id
+export ARM_TENANT_ID=
+export ARM_CLIENT_SECRET=
+export ARM_CLIENT_ID=
 
 # Storage access key where the terraform state information is to be stored.
 export ARM_ACCESS_KEY=
