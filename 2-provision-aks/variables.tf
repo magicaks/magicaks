@@ -4,10 +4,6 @@ variable subscription_id {}
 variable tenant_id {}
 variable aad_tenant_id { }
 
-variable resource_group_name {}
-
-variable location {}
-
 variable log_analytics_workspace_name {
     default = "k8sLogAnalyticsWorkspace"
 }
@@ -23,7 +19,6 @@ variable "dns_prefix" {}
 variable cluster_name {}
 
 variable "admin_group_object_ids" { }
-variable "aad_tenant_id" { }
 
 variable "k8s_subnet_id" { }
 variable "aci_subnet_id" { }
@@ -41,4 +36,3 @@ variable "monitoring_reader_sp_client_secret" {}
 variable "cluster_database_name" {}
 
 variable "user_assigned_identity_resource_id" {}
-variable "cluster_database_name" {}
