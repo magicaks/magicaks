@@ -197,7 +197,7 @@ Before we provision the AKS clusters, we will provision some common resources th
     * **resource_group_name** is the resource group name to create for the long lasting resources
     * **cluster_name** is a prefix for many of the resources, keep this short, and without dashes to fulfill [Azure naming requirements](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules)
 
-3. Execute the terraform scripts to provision the resources (from the [1-preprovision](./1-preprovision/) folder)
+3. Execute the Terraform scripts to provision the resources (from the [1-preprovision](./1-preprovision/) folder):
 
     ```bash
     terraform init
@@ -205,7 +205,7 @@ Before we provision the AKS clusters, we will provision some common resources th
     terraform apply
     ```
 
-> NOTE: It's normal for this to take a long time to provision, especially the Firewall, so relax and grab a coffee.
+> Note: It's normal for this to take a long time to provision, especially the Firewall, so relax and grab a coffee.
 
 ## Provision an AKS cluster
 
@@ -220,7 +220,7 @@ Before we provision the AKS clusters, we will provision some common resources th
 
 2. Create an identity for the cluster
 
-    MagicAKS creates a managed identity cluster. We create the identity for this cluster in the resource group with other long lasting resources, so the permissions remains even if we recreate the cluster. To create an identity follow the steps below:
+    MagicAKS creates a managed identity cluster. We create the identity for this cluster in the resource group with other long lasting resources, so the permissions remain even if we recreate the cluster. To create an identity follow the steps below:
 
     ```bash
     export RG_WHERE_NETWORK_EXISTS=magicaks-longlasting
@@ -231,17 +231,17 @@ Before we provision the AKS clusters, we will provision some common resources th
     az role assignment create --role "Virtual Machine Contributor" --assignee $MSI_CLIENT_ID -g $RG_WHERE_NETWORK_EXISTS
     ```
 
-    > **NOTE** MagicAKS is not creating a system assigned managed identity, due to current [limitations](https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#create-an-aks-cluster-with-managed-identities) of self managed VNet and static IP address outside the MC_ resource group.
+    > **Note:** MagicAKS is not creating a system assigned managed identity, due to current [limitations](https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#create-an-aks-cluster-with-managed-identities) of self-managed VNet and static IP address outside the MC_ resource group.
 
-    You will need to provide the Managed Identity ``MSI_RESOURCE_ID`` as a variable to terraform when creating the cluster.
+    You will need to provide the managed identity `MSI_RESOURCE_ID` as a variable to Terraform when creating the cluster.
 
-3. Verify that the terraform backend values match your storage account in [./2-provision-aks/main.tf](2-provision-aks/main.tf)
+3. Verify that the Terraform backend values match your storage account in [./2-provision-aks/main.tf](2-provision-aks/main.tf).
 
-4. Fill out the terraform parameters in [2-provision-aks/terraform.tfvars.tmpl](2-provision-aks/terraform.tfvars.tmpl) and save it without the .tmpl ending.
+4. Fill out the Terraform parameters in [2-provision-aks/terraform.tfvars.tmpl](2-provision-aks/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
 
     [TODO]: # (explain what all the variables are)
 
-5. Provision the cluster
+5. Provision the cluster:
 
     ```bash
     terraform init
@@ -251,21 +251,21 @@ Before we provision the AKS clusters, we will provision some common resources th
 
     This step will also download the credentials we need for the following steps for interacting with the cluster.
 
-    This step also creates Grafana and connects it to the log analytics workspace. The terraform scripts also creates Postgres which acts as the storage backend for Grafana.
+    This step also creates Grafana and connects it to the Log Analytics workspace. The Terraform scripts also create Postgres, which acts as the storage backend for Grafana.
 
 ## Provision support resources
 
 After we provision the cluster, we need to provision all support resources.
 
-This will set up flux for admin and non admin workloads and apply the desired state of the configs to your cluster. During this step we will also create the service bus and other supporting resources.
+This will set up Flux for admin and non-admin workloads and apply the desired state of the configs to your cluster. During this step we will also create the service bus and other supporting resources.
 
-1. Verify that the terraform backend values match your storage account in [./3-postprovision/main.tf](3-postprovision/main.tf)
+1. Verify that the Terraform backend values match your storage account in [./3-postprovision/main.tf](3-postprovision/main.tf).
 
-2. Fill out the terraform parameters in [3-postprovision/terraform.tfvars.tmpl](3-postprovision/terraform.tfvars.tmpl) and save it without the .tmpl ending.
+2. Fill out the Terraform parameters in [3-postprovision/terraform.tfvars.tmpl](3-postprovision/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
 
     [TODO]: # (explain what all the variables are)
 
-3. Provision the support resources
+3. Provision the support resources:
 
     ```bash
     terraform init
@@ -275,23 +275,23 @@ This will set up flux for admin and non admin workloads and apply the desired st
 
 ## What have we installed?
 
-Congratulations, you have provisioned your AKS cluster with the following resources
+Congratulations, you have provisioned your AKS cluster with the following resources:
 
-1. AKS cluster.
+* AKS cluster with
 
-   1. VMSS node pool with 1 - 5 nodes.
-   2. Container insights in enabled.
-   3. ~~Pod security policies enabled.~~ (AKS has deprecated PSP in favor of Azure Policy)
-   4. RBAC enabled.
-   5. Calico as the network plugin
-   6. Kubernetes version = 1.19.7
+   * VMSS node pool with 1 - 5 nodes
+   * Container Insights enabled
+   * ~~Pod security policies enabled~~ (AKS has deprecated PSP in favor of Azure Policy)
+   * RBAC enabled
+   * Calico as the network plugin
+   * Kubernetes version = 1.19.7
 
-2. Flux gitOps operator
-3. Azure KeyVault
-4. akv2k8s operator installed to provide seamless access to KeyVault secrets.
-5. Service bus integrated and primary connection string stored in KeyVault and exposed in cluster as K8s secret.
-6. Integration with Azure Active Directory for K8s RBAC.
-7. Pod security policies enabled and a restricted policy added.
-8. Azure Policy enabled on the cluster. No policies assigned right now.
-9. Azure Firewall integrated with network and application rules as recommended by AKS.
-10. Grafana connected to log analytics workspace of the cluster is running in Azure container instance backed by managed Postgresql Azure database.
+* Flux GitOps operator
+* Azure Key Vault
+* akv2k8s operator installed to provide seamless access to Key Vault secrets
+* Service bus integrated and primary connection string stored in Key Vault and exposed in cluster as K8s secret
+* Integration with Azure Active Directory for K8s RBAC
+* Pod security policies enabled and a restricted policy added
+* Azure Policy enabled on the cluster (no policies assigned right now)
+* Azure Firewall integrated with network and application rules as recommended by AKS
+* Grafana connected to Log Analytics workspace of the cluster is running in Azure Container Instances backed by managed PostgreSQL database
