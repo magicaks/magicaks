@@ -4,7 +4,7 @@
 
 ## Software requirements
 
-We have tested this repo with OSX, Linux and Windows (on [WSL](https://docs.microsoft.com/en-us/windows/wsl/)).
+We have tested this repo with OSX, Linux and Windows (on [WSL2](https://docs.microsoft.com/en-us/windows/wsl/)).
 
 You need to install:
 
@@ -47,7 +47,7 @@ You can do everything in this section once, and reuse the assets when spinning u
     az login
     ```
 
-    > NOTE: You need to log in on tenant that you want to manage RBAC from - to login in to a specific tenant use `az login --tenant <tenant_id>` and if your AAD tenant does not have a subscription, run `az login --tenant <tenant_id> --allow-no-subscriptions` instead.
+    > **NOTE:** You need to log in on tenant that you want to manage RBAC from - to login in to a specific tenant use `az login --tenant <tenant_id>` and if your AAD tenant does not have a subscription, run `az login --tenant <tenant_id> --allow-no-subscriptions` instead.
 
 2. Create a new Azure AD group for the AKS cluster admins
 
@@ -77,12 +77,12 @@ This is user workloads manifest repo where you list non-privileged workloads. Fl
 
 ### 5. Create Service Principals for provisioning resources
 
-1. Create a service principal (**terraform-magicaks**) that terraform can use for deploying resources. **Write down the id and password for later.**
+1. Create a service principal (**magicaks-terraform**) that terraform can use for deploying resources. **Write down the id and password for later.**
 
     > **NOTE:** Replace SUBSCRIPTION_ID with your own Azure subscription ID
 
     ```bash
-    az ad sp create-for-rbac --role="Contributor" --name "terraform-magicaks" --scopes="/subscriptions/SUBSCRIPTION_ID"
+    az ad sp create-for-rbac --role="Contributor" --name "magicaks-terraform" --scopes="/subscriptions/SUBSCRIPTION_ID"
     OBJECT_ID=$(az ad sp show --id app_id_from_above --query objectId)
     az role assignment create --assignee-object-id $OBJECT_ID --role "Resource Policy Contributor" # Needed to assign Azure Policy to cluster.
     ```
@@ -161,8 +161,8 @@ Terraform stores state configuration in Azure Storage.
     | -- | -- | -- |
     | ARM_SUBSCRIPTION_ID | The Azure subscription ID for the subscription where you want to provision the resources | In the Azure Portal |
     | ARM_TENANT_ID | The Azure Tenant ID for the tenant where you want to provision the resources | In the Azure Portal |
-    | ARM_CLIENT_ID | The **terraform-magicaks** service principal password | Saved in step 5.1 |
-    | ARM_CLIENT_SECRET | The **terraform-magicaks** service principal password | Saved in step 5.1 |
+    | ARM_CLIENT_ID | The **magicaks-terraform** service principal password | Saved in step 5.1 |
+    | ARM_CLIENT_SECRET | The **magicaks-terraform** service principal password | Saved in step 5.1 |
     | ARM_ACCESS_KEY | Terraform state storage access key | See step 6 |
 
     [TODO]: # (verify these - we could probably explain a bit more about where in the portal -- also, is this the tenant of the AAD or where you create the clusters)
