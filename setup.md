@@ -209,6 +209,7 @@ Before we provision the AKS clusters, we will provision some common resources th
 
     ```bash
     terraform init
+    terraform plan
     terraform apply
     ```
 
@@ -254,6 +255,7 @@ Before we provision the AKS clusters, we will provision some common resources th
 
     ```bash
     terraform init
+    terraform plan
     terraform apply
     ```
 
@@ -277,6 +279,7 @@ This will set up flux for admin and non admin workloads and apply the desired st
 
     ```bash
     terraform init
+    terraform plan
     terraform apply
     ```
 
