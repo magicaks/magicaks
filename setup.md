@@ -17,19 +17,22 @@ You need to install:
     sudo curl -L https://github.com/fluxcd/flux/releases/download/1.21.1/fluxctl_linux_amd64 -o
     /usr/local/bin/fluxctl
     chmod a+x /usr/local/bin/fluxctl
+    chmod a+x /usr/local/bin/fluxctl
     ```
 
-* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) logged in with a user with permissions to provision resources and create applications on the AAD.
-* [Terraform](https://www.terraform.io/downloads.html) Tested with v0.14.2
+    > Note the version number in the URL above.
+
+* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) with a user with permissions to provision resources in Azure and manage [Azure Active Directory (AAD)](https://azure.microsoft.com/en-us/services/active-directory/).
+* [Terraform](https://www.terraform.io/downloads.html) (tested with version 0.14.2)
 * [jq](https://stedolan.github.io/jq/)
 
-You can also use this [Docker dev container](./utils/docker-dev-env/README.md) if you don't want to install the tools on your own machine.
+You can also use this [Docker dev container](./utils/docker-dev-env/README.md), if you don't want to install the tools in your native environment, but note that there can be additional considerations using the Docker development environment that are not covered by this guide.
 
-> **NOTE:** The installation assumes that you have an Azure Active Directory, and that you are the owner/admin of this directory or can request to create AAD apps. We will need this for RBAC setup for Kubernetes. For testing purposes you can [create a personal AAD](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-access-create-new-tenant).
+> **Note:** The installation assumes that you have an Azure Active Directory (AAD), and that you are the owner/admin of this directory or can request to create AAD apps. We will need this for [role-based access control (RBAC)](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) setup for Kubernetes. For testing purposes you can [create a personal AAD](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-access-create-new-tenant).
 
 ## One time setup
 
-Before provisioning the AKS resources we need to prepare some repositories, set up AAD security groups and Service Principals.
+Before provisioning the AKS resources we need to prepare some repositories, set up AAD security groups and service principals.
 
 [TODO]: # (is this correct?)
 
@@ -37,11 +40,11 @@ You can do everything in this section once, and reuse the assets when spinning u
 
 ### 1. Duplicate this repository
 
-[Duplicate](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository) this repository in GitHub and make your repository private. You will need to change some of the terraform scripts etc. throughout this setup.
+[Duplicate](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository) this repository in GitHub and make your repository private. You will need to change some of the Terraform scripts etc. throughout this setup.
 
 ### 2. Create an AKS cluster admins AAD group
 
-1. Log in as AAD admin.
+1. Log in as AAD admin:
 
     ```sh
     az login
@@ -49,7 +52,7 @@ You can do everything in this section once, and reuse the assets when spinning u
 
     > **NOTE:** You need to log in on tenant that you want to manage RBAC from - to login in to a specific tenant use `az login --tenant <tenant_id>` and if your AAD tenant does not have a subscription, run `az login --tenant <tenant_id> --allow-no-subscriptions` instead.
 
-2. Create a new Azure AD group for the AKS cluster admins
+2. Create a new Azure AD group for the AKS cluster admins:
 
     ```sh
     az ad group create --display-name magicaksadmins --mail-nickname magicaksadmins
@@ -59,27 +62,25 @@ You can do everything in this section once, and reuse the assets when spinning u
 
 ### 3. Set up the admin repository and configure RBAC
 
-1. Duplicate the [fabricate-defs repository](https://github.com/magicaks/fabrikate-defs). We recommended making this repository private.
+1. Duplicate the [Fabrikate high-level definitions (HLD) repository](https://github.com/magicaks/fabrikate-defs). We recommended making this repository private. You will use this repository, for example, to generate RBAC and Azure Monitor configuration.
 
-    This will be your Fabrikate High Level Definition (HLD) repo.
 
-    You will use this repository to generate RBAC and Azure Monitor configuration
 
-2. Follow the steps in the [README](https://github.com/magicaks/fabrikate-defs/blob/master/README.md) to set up RBAC for your cluster.
+2. Follow the steps in the [Fabrikate definitions repository README](https://github.com/magicaks/fabrikate-defs/blob/master/README.md) to set up RBAC for your cluster.
 
-> **NOTE:** Make sure you finish the steps in the README before you continue
+> **Note:** Make sure you finish the steps in the README before you continue.
 
 ### 4. Set up the user workloads manifest repository
 
 1. Duplicate the [k8sworkloads repository](https://github.com/magicaks/k8sworkloads). We recommended making this repository private.
 
-This is user workloads manifest repo where you list non-privileged workloads. Flux gitOps non admin controller will track this repository.
+This is user workloads manifest repo where you list non-privileged workloads. [Flux (GitOps)](https://fluxcd.io/) non-admin controller will track this repository.
 
-### 5. Create Service Principals for provisioning resources
+### 5. Create service principals for provisioning resources
 
 1. Create a service principal (**magicaks-terraform**) that terraform can use for deploying resources. **Write down the id and password for later.**
 
-    > **NOTE:** Replace SUBSCRIPTION_ID with your own Azure subscription ID
+    > **Note:** Replace `SUBSCRIPTION_ID` with your own Azure subscription ID.
 
     ```bash
     az ad sp create-for-rbac --role="Contributor" --name "magicaks-terraform" --scopes="/subscriptions/SUBSCRIPTION_ID"
@@ -89,7 +90,7 @@ This is user workloads manifest repo where you list non-privileged workloads. Fl
 
     [TODO]: # (why does this need --scopes and not the next one)
 
-2. Create a service principal (**magicaks-grafana**) that grafana can use for talking to log analytics backend. We restrict this service principal to **Monitoring Reader**.
+2. Create a service principal (**magicaks-grafana**) that Grafana can use for talking to Log Analytics backend. We restrict this service principal to **Monitoring Reader** role.
 
     ```bash
     az ad sp create-for-rbac  --role "Monitoring Reader" --name "magicaks-grafana"
@@ -99,7 +100,7 @@ This is user workloads manifest repo where you list non-privileged workloads. Fl
 
 Terraform stores state configuration in Azure Storage.
 
-1. If you don't have a storage account to use for terraform state already configured. Create a resource group and a storage account with a container per the instructions from the Microsoft docs [Tutorial: Store Terraform state in Azure Storage](https://docs.microsoft.com/en-us/azure/developer/terraform/store-state-in-azure-storage)
+1. If you don't have a storage account to use for Terraform state already configured, create a resource group and a storage account with a container per the instructions from the Microsoft docs: [Tutorial: Store Terraform state in Azure Storage](https://docs.microsoft.com/en-us/azure/developer/terraform/store-state-in-azure-storage):
 
     ```bash
     #!/bin/bash
@@ -128,7 +129,7 @@ Terraform stores state configuration in Azure Storage.
 
 2. Note the storage account name, container name and storage access key. You will need the storage access key in step 7.
 
-3. Update the terraform section of [1-preprovision/main.tf](1-preprovision/main.tf) with your values for resource_group_name, container_name, and storage_account_name. Leave the key as **"magicaks-longlasting"**.
+3. Update the Terraform section of [1-preprovision/main.tf](./1-preprovision/main.tf) with your values for `resource_group_name`, `container_name`, and `storage_account_name`. Leave the key as `**"magicaks-longlasting"**`.
 
     ```terraform
     terraform {
@@ -141,7 +142,7 @@ Terraform stores state configuration in Azure Storage.
     }
     ```
 
-### 7. Set up the environment variables for terraform
+### 7. Set up the environment variables for Terraform
 
 [TODO]: # (create a template in the repository)
 [TODO]: # (rename some of these to better names)
@@ -175,22 +176,22 @@ Terraform stores state configuration in Azure Storage.
 
 ## Prepare to provision resources with terraform
 
-> **NOTE** Terraform requires variables as input. You can provide these either interactively or if there is a terraform.tfvars file present then terraform will detect it and use variable names from there. Each of the folders ([1-preprovision](1-preprovision/terraform.tfvars.tmpl), [2-provision-aks](2-provision-aks/terraform.tfvars.tmpl), [3-postprovision](3-postprovision/terraform.tfvars.tmpl) have a terraform.tfvars.tmpl file. If you want to use terraform.tfvars support you can copy terraform.tfvars.tmpl to terraform.tfvars and fill the values.
+> **Note:** Terraform requires variables as input. You can provide these either interactively or if there is a `terraform.tfvars` file present then Terraform will detect it and use the variables there. Each of the folders ([1-preprovision](1-preprovision/terraform.tfvars.tmpl), [2-provision-aks](2-provision-aks/terraform.tfvars.tmpl), [3-postprovision](3-postprovision/terraform.tfvars.tmpl) have a `terraform.tfvars.tmpl` file. If you want to use `terraform.tfvars` support, you can rename/copy `terraform.tfvars.tmpl` to `terraform.tfvars` and fill in the values.
 
 1. If you are not logged in already, log in with `az login` to the subscription where you want to deploy the resources.
 
-## Provision Common Resources (preprovision)
+## Provision common resources (pre-provision)
 
-Before we provision the AKS clusters, we will provision some common resources that we can use for all clusters such as
+Before we provision the AKS clusters, we will provision some common resources that we can use for all clusters such as:
 
 * [Azure Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview)
 * [Azure Firewall](https://docs.microsoft.com/en-us/azure/firewall/overview)
 * [Azure Key Vault](https://docs.microsoft.com/en-us/azure/key-vault/general/basic-concepts)
 * [Azure Container Registry](https://docs.microsoft.com/en-us/azure/container-registry/)
 
-1. Open main.tf to verify that you have set the terraform backend variables appropriately and that the names for other resources look ok.
+1. Open `main.tf` to verify that you have set the Terraform backend variables appropriately and that the names for other resources look OK.
 
-2. *Optionally* set the **location**, **resource_group_name** and **cluster_name** variables in terraform.tfvars.impl and remove the .impl from the name. (If you don't do this, terraform will ask you for these variables when you execute the terraform scripts)
+2. *Optionally* set the `location`, `resource_group_name` and `cluster_name` variables in `terraform.tfvars.tmpl` and remove the `.impl` postfix from the filename. (If you don't do this, Terraform will ask you for these variables when you execute the Terraform scripts.)
 
     * **location** is the location where to create the resources, e.g. westeurope
     * **resource_group_name** is the resource group name to create for the long lasting resources
