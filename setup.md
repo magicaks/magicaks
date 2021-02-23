@@ -18,6 +18,7 @@ You need to install:
     /usr/local/bin/fluxctl
     chmod a+x /usr/local/bin/fluxctl
     chmod a+x /usr/local/bin/fluxctl
+    chmod a+x /usr/local/bin/fluxctl
     ```
 
     > Note the version number in the URL above.
