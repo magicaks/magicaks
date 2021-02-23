@@ -67,8 +67,6 @@ You can do everything in this section once, and reuse the assets when spinning u
 
 1. Duplicate the [Fabrikate high-level definitions (HLD) repository](https://github.com/magicaks/fabrikate-defs). We recommended making this repository private. You will use this repository, for example, to generate RBAC and Azure Monitor configuration.
 
-
-
 2. Follow the steps in the [Fabrikate definitions repository README](https://github.com/magicaks/fabrikate-defs/blob/master/README.md) to set up RBAC for your cluster.
 
 > **Note:** Make sure you finish the steps in the README before you continue.
@@ -282,19 +280,18 @@ Congratulations, you have provisioned your AKS cluster with the following resour
 
 * AKS cluster with
 
-   * VMSS node pool with 1 - 5 nodes
-   * Container Insights enabled
-   * ~~Pod security policies enabled~~ (AKS has deprecated PSP in favor of Azure Policy)
-   * RBAC enabled
-   * Calico as the network plugin
-   * Kubernetes version = 1.19.7
+  * VMSS node pool with 1 - 5 nodes
+  * Container Insights enabled
+  * ~~Pod security policies enabled~~ (AKS has deprecated PSP in favor of Azure Policy)
+  * RBAC enabled
+  * Calico as the network plugin
+  * Kubernetes version = 1.19.7
 
 * Flux GitOps operator
 * Azure Key Vault
 * akv2k8s operator installed to provide seamless access to Key Vault secrets
 * Service bus integrated and primary connection string stored in Key Vault and exposed in cluster as K8s secret
 * Integration with Azure Active Directory for K8s RBAC
-* Pod security policies enabled and a restricted policy added
 * Azure Policy enabled on the cluster (no policies assigned right now)
 * Azure Firewall integrated with network and application rules as recommended by AKS
 * Grafana connected to Log Analytics workspace of the cluster is running in Azure Container Instances backed by managed PostgreSQL database
