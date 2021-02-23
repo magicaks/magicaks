@@ -16,6 +16,7 @@ You need to install:
     ```bash
     sudo curl -L https://github.com/fluxcd/flux/releases/download/1.21.1/fluxctl_linux_amd64 -o
     /usr/local/bin/fluxctl
+    chmod a+x /usr/local/bin/fluxctl
     ```
 
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) logged in with a user with permissions to provision resources and create applications on the AAD.
