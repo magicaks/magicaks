@@ -1,0 +1,24 @@
+{
+    "cSpell.words": [
+        "Fabrikate",
+        "Kustomize",
+        "Postgres",
+        "VMSS",
+        "azmonconfig",
+        "azurecr",
+        "fluxctl",
+        "kubectl",
+        "kured",
+        "longlasting",
+        "magicaks",
+        "magicaksadmins",
+        "magicaksmsi",
+        "microservice",
+        "microservices",
+        "operationalizing",
+        "postprovision",
+        "preprovision",
+        "rbac",
+        "sworkloads"
+    ]
+}
