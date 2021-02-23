@@ -58,7 +58,7 @@ resource "azurerm_key_vault_secret" "sbconnectionstring" {
   key_vault_id = var.key_vault_id
 
   provisioner "local-exec" {
-    command = "${path.cwd}/../utils/expose-secret.sh ${self.name} magicaks-keyvault ${var.app_name}"
+    command = "${path.cwd}/../utils/expose-secret.sh ${self.name} ${var.key_vault_id} ${var.app_name}"
   }
 
   depends_on = [module.flux]

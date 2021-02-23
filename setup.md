@@ -148,30 +148,20 @@ Terraform stores state configuration in Azure Storage.
 1. Create a file called .env with the values gathered in the previous steps
 
     ```bash
-    # Service principal used by terraform.
-    export TF_VAR_client_secret=
-    export TF_VAR_client_id=
-    # Github personal access token
-    export TF_VAR_pat=
-    export TF_VAR_tenant_id=
-    # Grafana password
-    export TF_VAR_grafana_admin_password=
     export ARM_SUBSCRIPTION_ID=
-    export ARM_TENANT_ID=$TF_VAR_tenant_id
-    export ARM_CLIENT_SECRET=$TF_VAR_client_secret
-    export ARM_CLIENT_ID=$TF_VAR_client_id
-    # Storage access key where we store the terraform state information.
+    export ARM_TENANT_ID=
+    export ARM_CLIENT_ID=
+    export ARM_CLIENT_SECRET=
+    # Storage access key where the terraform state information is to be stored.
     export ARM_ACCESS_KEY=
     ```
 
     | Environment variable | Description | Where to find it |
     | -- | -- | -- |
-    | TF_VAR_client_secret | **terraform-magicaks** service principal password | Saved in step 5.1 |
-    | TF_VAR_client_id | **terraform-magicaks** service principal password | Saved in step 5.1 |
-    | TF_VAR_pat | Your GitHub Personal Access Token | Generated in the Fabrikate HLD repo steps |
-    | TF_VAR_tenant_id | Your Azure Tenant ID | In the Azure Portal |
-    | TF_VAR_grafana_admin_password | Strong password used for Grafana admin | Generate a password to use |
-    | ARM_SUBSCRIPTION_ID | Your Azure subscription ID | In the Azure Portal |
+    | ARM_SUBSCRIPTION_ID | The Azure subscription ID for the subscription where you want to provision the resources | In the Azure Portal |
+    | ARM_TENANT_ID | The Azure Tenant ID for the tenant where you want to provision the resources | In the Azure Portal |
+    | ARM_CLIENT_ID | The **terraform-magicaks** service principal password | Saved in step 5.1 |
+    | ARM_CLIENT_SECRET | The **terraform-magicaks** service principal password | Saved in step 5.1 |
     | ARM_ACCESS_KEY | Terraform state storage access key | See step 6 |
 
     [TODO]: # (verify these - we could probably explain a bit more about where in the portal -- also, is this the tenant of the AAD or where you create the clusters)
