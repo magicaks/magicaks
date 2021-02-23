@@ -9,7 +9,6 @@ We have tested this repo with OSX, Linux and Windows (on [WSL](https://docs.micr
 You need to install:
 
 * [curl](https://curl.se/)
-* [kubectl min version 1.18.1](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 * [fluxctl](https://docs.fluxcd.io/en/1.18.0/references/fluxctl.html)
 
   To install fluxctl on WSL run
@@ -107,9 +106,10 @@ Terraform stores state configuration in Azure Storage.
     RESOURCE_GROUP_NAME=tstate
     STORAGE_ACCOUNT_NAME=tstate$RANDOM
     CONTAINER_NAME=tstate
+    LOCATION=eastus
 
     # Create resource group
-    az group create --name $RESOURCE_GROUP_NAME --location eastus
+    az group create --name $RESOURCE_GROUP_NAME --location $LOCATION
 
     # Create storage account
     az storage account create --resource-group $RESOURCE_GROUP_NAME --name $STORAGE_ACCOUNT_NAME --sku Standard_LRS --encryption-services blob
@@ -207,10 +207,10 @@ Before we provision the AKS clusters, we will provision some common resources th
 
 ## Provision an AKS cluster
 
-1. Create a custom Grafana image (from the [./utils/grafana/](./utils/grafana/) folder)
+1. Create a custom Grafana image (from the [./utils/grafana/](./utils/grafana/) folder). **NOTE: Replace registry_name with the name of the Azure Container Registry created during pre-provisioning**
 
     ```bash
-    export registry=registry_name_here
+    export registry=<registry_name>
     az acr build -t $registry.azurecr.io/grafana:v1 -r $registry .
     ```
 
@@ -231,9 +231,7 @@ Before we provision the AKS clusters, we will provision some common resources th
 
     > **NOTE** MagicAKS is not creating a system assigned managed identity, due to current [limitations](https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#create-an-aks-cluster-with-managed-identities) of self managed VNet and static IP address outside the MC_ resource group.
 
-    We provide ``MSI_RESOURCE_ID`` as a variable to terraform when creating the cluster.
-
-    [TODO]: # (figure out what this is and which variable we are talking about)
+    You will need to provide the Managed Identity ``MSI_RESOURCE_ID`` as a variable to terraform when creating the cluster.
 
 3. Verify that the terraform backend values match your storage account in [./2-provision-aks/main.tf](2-provision-aks/main.tf)
 

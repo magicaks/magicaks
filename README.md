@@ -40,7 +40,7 @@ Planned components
 * [Azure SQL](https://docs.microsoft.com/en-us/azure/azure-sql/azure-sql-iaas-vs-paas-what-is-overview) as database provider.
 * [Azure Application Gateway](https://docs.microsoft.com/en-us/azure/application-gateway/features) as ingress controller.
 
-When needed, the solution uses open source tooling like [kured](https://github.com/weaveworks/kured).
+When needed, the solution uses open source tooling like [kured](https://github.com/weaveworks/kured) to keep cluster nodes up to date.
 
 ## Stages
 
@@ -48,20 +48,20 @@ This solution consists of 3 stages.
 
 [TODO]: # (we should explain these stages - what they do)
 
-1. Pre-provision
-2. Provision AKS
-3. Post-provision
+1. [Pre-provision](1-preprovision/) - Provisioning base resources that can be reused for multiple AKS clusters
+2. [Provision AKS](2-provision-aks/) - Provisioning the AKS cluster
+3. [Post-provision](3-postprovision/) - Provisioning supporting resources and tools
 
 We use [terraform](https://www.terraform.io/) to bootstrap the infrastructure and set up a gitOps connection in the cluster which then picks up kubernetes manifests for the declared state of the cluster.
 
-These manifests are in turn divided into two parts.
+These manifests are in turn divided into two repositories.
 
-1. Manifests which require admin permissions on the cluster to install.
-2. Manifests for workloads which can run with limited credentials.
+1. One repository with manifests which require admin permissions on the cluster to install.
+2. One repository with manifests for workloads which can run with limited credentials.
 
 This is done to prevent unauthorized installations in the cluster. Hence, there are two [flux](https://fluxcd.io/) pods running, one for each type of manifest. Admin manifests should come from a repository controlled by cluster admins that has tighter process control methods that checks every input before it's applied to the cluster.
 
-Instead of writing k8s manifests directly we use Fabrikate High Level Definition (HLD) to write the config which is then translated to K8s manifests using a pipeline which in turn runs ``fab generate`` and pushes the config to the k8s manifest repo. However you do not need to use Fabrikate. The automation expects names of kubernetes manifest repo and you can use any manifest generation tool of your choice, for example Kustomize.
+Instead of writing k8s manifests directly we use Fabrikate High Level Definition (HLD) to write the config which is then translated to K8s manifests using a pipeline which in turn runs ``fab generate`` and pushes the config to the k8s manifest repo.
 
 If you use a different manifest generation system make sure you to run ``rbac-generator.py`` and ``azmonconfig-generator.py`` as part of building the manifests.
 

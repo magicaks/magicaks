@@ -17,10 +17,6 @@ First of all thank you. Collectively we can remove the drudgery associated with 
 
 * Open a [new issue](https://github.com/magicaks/magicaks/issues/new) so we can first discuss the changes there. After the discussion you may send a PR with relevant changes. Do not send a PR without discussion on an issue.
 
-## **Do you have questions about the source code?**
-
-* Ask [Sachin Kundu](mailto:skundu@hey.com)
-
 ## **Do you want to contribute to the MagicAKS documentation?**
 
 * Awesome, please make sure the steps you offer are independently verified first. Add screenshots when appropriate. File a PR when ready.
