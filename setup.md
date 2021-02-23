@@ -1,4 +1,4 @@
-# Magic AKS Setup
+# MagicAKS setup
 
 > **IMPORTANT:** There is a cost associated with provisioning resources on Azure. Specifically the Azure Firewall costs by the hour. If you are setting this up for testing purposes, you may want to tear down all resources after testing to avoid high bills for resources you don't use.
 
