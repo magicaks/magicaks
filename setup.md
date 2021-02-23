@@ -23,6 +23,8 @@ You need to install:
 
     > Note the version number in the URL above.
 
+    > Note the version number in the URL above.
+
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) with a user with permissions to provision resources in Azure and manage [Azure Active Directory (AAD)](https://azure.microsoft.com/en-us/services/active-directory/).
 * [Terraform](https://www.terraform.io/downloads.html) (tested with version 0.14.2)
 * [jq](https://stedolan.github.io/jq/)
