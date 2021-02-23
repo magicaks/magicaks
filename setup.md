@@ -269,7 +269,7 @@ This will set up flux for admin and non admin workloads and apply the desired st
 
 1. Verify that the terraform backend values match your storage account in [./3-postprovision/main.tf](3-postprovision/main.tf)
 
-2. Fill out the terraform parameters in [2-provision-aks/terraform.tfvars.tmpl](2-provision-aks/terraform.tfvars.tmpl) and save it without the .tmpl ending.
+2. Fill out the terraform parameters in [3-postprovision/terraform.tfvars.tmpl](3-postprovision/terraform.tfvars.tmpl) and save it without the .tmpl ending.
 
     [TODO]: # (explain what all the variables are)
 
