@@ -1,4 +1,4 @@
-# Magic AKS - Opinionated cluster config for microservices on Azure
+# MagicAKS - Opinionated cluster config for microservices on Azure
 
 ## Introduction
 
