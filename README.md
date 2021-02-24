@@ -1,7 +1,5 @@
 # Magic AKS - Opinionated cluster config for microservices on Azure
 
-[TODO]: # (we should go over this again - I feel like it is a bit repetitive)
-
 ## Introduction
 
 Azure Kubernetes service makes it easy to spin up a functional cluster, but there is more to running Kubernetes than the nodes. Making a cluster workable requires good amount of grunt work.
@@ -32,9 +30,6 @@ The architecture includes the following components:
 * [Azure Key Vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) for secret storage
 * [Azure Policy](https://docs.microsoft.com/en-us/azure/governance/policy/overview) for policy enforcement, compliance and governance (Done)
 
-[TODO]: # (a picture would be nice here - and I also think it is missing some components like grafana)
-[TODO]: # (we should have explanations for design decisions - both for the above but also for flux, Fabrikate, grafana etc.)
-
 Planned components
 
 * [Azure SQL](https://docs.microsoft.com/en-us/azure/azure-sql/azure-sql-iaas-vs-paas-what-is-overview) as database provider.
@@ -45,8 +40,6 @@ When needed, the solution uses open source tooling like [kured](https://github.c
 ## Stages
 
 This solution consists of 3 stages.
-
-[TODO]: # (we should explain these stages - what they do)
 
 1. [Pre-provision](1-preprovision/) - Provisioning base resources that can be reused for multiple AKS clusters
 2. [Provision AKS](2-provision-aks/) - Provisioning the AKS cluster
@@ -66,8 +59,6 @@ Instead of writing k8s manifests directly we use Fabrikate High Level Definition
 If you use a different manifest generation system make sure you to run ``rbac-generator.py`` and ``azmonconfig-generator.py`` as part of building the manifests.
 
 ## How to use this repo
-
-[TODO]: # (need better wording for this)
 
 Set up your environment using the [setup instructions](setup.md)
 
