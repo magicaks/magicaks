@@ -17,6 +17,8 @@ You need to install:
     sudo curl -L https://github.com/fluxcd/flux/releases/download/1.21.1/fluxctl_linux_amd64 -o
     /usr/local/bin/fluxctl
     chmod a+x /usr/local/bin/fluxctl
+    chmod a+x /usr/local/bin/fluxctl
+    chmod a+x /usr/local/bin/fluxctl
     ```
 
     > Note the version number in the URL above.
@@ -35,6 +37,8 @@ You can also use this [Docker dev container](./utils/docker-dev-env/README.md), 
 
 Before provisioning the AKS resources we need to prepare some repositories, set up AAD security groups and service principals.
 
+[TODO]: # (is this correct?)
+
 You can do everything in this section once, and reuse the assets when spinning up new AKS clusters.
 
 ### 1. Duplicate this repository
@@ -51,18 +55,19 @@ You can do everything in this section once, and reuse the assets when spinning u
 
     > **NOTE:** You need to log in on tenant that you want to manage RBAC from - to login in to a specific tenant use `az login --tenant <tenant_id>` and if your AAD tenant does not have a subscription, run `az login --tenant <tenant_id> --allow-no-subscriptions` instead.
 
-1. Create a new Azure AD group for the AKS cluster admins:
+2. Create a new Azure AD group for the AKS cluster admins:
 
     ```sh
     az ad group create --display-name magicaksadmins --mail-nickname magicaksadmins
     ```
 
-1. Write down the **Object ID** of the group as you will need to supply this when creating the AKS cluster.
+3. Write down the **Object ID** of the group as you will need to supply this when creating the AKS cluster.
 
 ### 3. Set up the admin repository and configure RBAC
 
 1. Duplicate the [Fabrikate high-level definitions (HLD) repository](https://github.com/magicaks/fabrikate-defs). We recommended making this repository private. You will use this repository, for example, to generate RBAC and Azure Monitor configuration.
-1. Follow the steps in the [Fabrikate definitions repository README](https://github.com/magicaks/fabrikate-defs/blob/master/README.md) to set up RBAC for your cluster.
+
+2. Follow the steps in the [Fabrikate definitions repository README](https://github.com/magicaks/fabrikate-defs/blob/master/README.md) to set up RBAC for your cluster.
 
 > **Note:** Make sure you finish the steps in the README before you continue.
 
@@ -84,10 +89,12 @@ This is user workloads manifest repo where you list non-privileged workloads. [F
     az role assignment create --assignee-object-id $OBJECT_ID --role "Resource Policy Contributor" # Needed to assign Azure Policy to cluster.
     ```
 
-1. Create a service principal (**magicaks-grafana**) that Grafana can use for talking to Log Analytics backend. We restrict this service principal to **Monitoring Reader** role.
+    [TODO]: # (why does this need --scopes and not the next one)
+
+2. Create a service principal (**magicaks-grafana**) that Grafana can use for talking to Log Analytics backend. We restrict this service principal to **Monitoring Reader** role.
 
     ```bash
-    az ad sp create-for-rbac --role "Monitoring Reader" --name "magicaks-grafana"
+    az ad sp create-for-rbac  --role "Monitoring Reader" --name "magicaks-grafana"
     ```
 
 ### 6. Configure Terraform state
@@ -121,9 +128,9 @@ Terraform stores state configuration in Azure Storage.
     echo "access_key: $ACCOUNT_KEY"
     ```
 
-1. Note the storage account name, container name and storage access key. You will need the storage access key in step 7.
+2. Note the storage account name, container name and storage access key. You will need the storage access key in step 7.
 
-1. Update the Terraform section of [1-preprovision/main.tf](./1-preprovision/main.tf) with your values for `resource_group_name`, `container_name`, and `storage_account_name`. Leave the key as `**"magicaks-longlasting"**`.
+3. Update the Terraform section of [1-preprovision/main.tf](./1-preprovision/main.tf) with your values for `resource_group_name`, `container_name`, and `storage_account_name`. Leave the key as `**"magicaks-longlasting"**`.
 
     ```terraform
     terraform {
@@ -137,6 +144,9 @@ Terraform stores state configuration in Azure Storage.
     ```
 
 ### 7. Set up the environment variables for Terraform
+
+[TODO]: # (create a template in the repository)
+[TODO]: # (rename some of these to better names)
 
 1. Create a file called .env with the values gathered in the previous steps
 
@@ -157,7 +167,9 @@ Terraform stores state configuration in Azure Storage.
     | ARM_CLIENT_SECRET | The **magicaks-terraform** service principal password | Saved in step 5.1 |
     | ARM_ACCESS_KEY | Terraform state storage access key | See step 6 |
 
-1. Set the environment variables
+    [TODO]: # (verify these - we could probably explain a bit more about where in the portal -- also, is this the tenant of the AAD or where you create the clusters)
+
+2. Set the environment variables
 
    ```bash
    source .env
@@ -180,13 +192,13 @@ Before we provision the AKS clusters, we will provision some common resources th
 
 1. Open `main.tf` to verify that you have set the Terraform backend variables appropriately and that the names for other resources look OK.
 
-1. *Optionally* set the `location`, `resource_group_name` and `cluster_name` variables in `terraform.tfvars.tmpl` and remove the `.impl` postfix from the filename. (If you don't do this, Terraform will ask you for these variables when you execute the Terraform scripts.)
+2. *Optionally* set the `location`, `resource_group_name` and `cluster_name` variables in `terraform.tfvars.tmpl` and remove the `.impl` postfix from the filename. (If you don't do this, Terraform will ask you for these variables when you execute the Terraform scripts.)
 
     * **location** is the location where to create the resources, e.g. westeurope
     * **resource_group_name** is the resource group name to create for the long lasting resources
     * **cluster_name** is a prefix for many of the resources, keep this short, and without dashes to fulfill [Azure naming requirements](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules)
 
-1. Execute the Terraform scripts to provision the resources (from the [1-preprovision](./1-preprovision/) folder):
+3. Execute the Terraform scripts to provision the resources (from the [1-preprovision](./1-preprovision/) folder):
 
     ```bash
     terraform init
@@ -204,6 +216,8 @@ Before we provision the AKS clusters, we will provision some common resources th
     export registry=<registry_name>
     az acr build -t $registry.azurecr.io/grafana:v1 -r $registry .
     ```
+
+    [TODO]: # (what is this registry_name_here)
 
 2. Create an identity for the cluster
 
@@ -223,7 +237,11 @@ Before we provision the AKS clusters, we will provision some common resources th
     You will need to provide the managed identity `MSI_RESOURCE_ID` as a variable to Terraform when creating the cluster.
 
 3. Verify that the Terraform backend values match your storage account in [./2-provision-aks/main.tf](2-provision-aks/main.tf).
+
 4. Fill out the Terraform parameters in [2-provision-aks/terraform.tfvars.tmpl](2-provision-aks/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
+
+    [TODO]: # (explain what all the variables are)
+
 5. Provision the cluster:
 
     ```bash
@@ -232,7 +250,9 @@ Before we provision the AKS clusters, we will provision some common resources th
     terraform apply
     ```
 
-    Along with provisioning the cluster, the terraform script will also download the credentials we need for the following steps for interacting with the cluster. It will also create a Grafana instance and connects it to the Log Analytics workspace as well as Postgres, which acts as the storage backend for Grafana.
+    This step will also download the credentials we need for the following steps for interacting with the cluster.
+
+    This step also creates Grafana and connects it to the Log Analytics workspace. The Terraform scripts also create Postgres, which acts as the storage backend for Grafana.
 
 ## Provision support resources
 
@@ -241,8 +261,12 @@ After we provision the cluster, we need to provision all support resources.
 This will set up Flux for admin and non-admin workloads and apply the desired state of the configs to your cluster. During this step we will also create the service bus and other supporting resources.
 
 1. Verify that the Terraform backend values match your storage account in [./3-postprovision/main.tf](3-postprovision/main.tf).
-1. Fill out the Terraform parameters in [3-postprovision/terraform.tfvars.tmpl](3-postprovision/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
-1. Provision the support resources:
+
+2. Fill out the Terraform parameters in [3-postprovision/terraform.tfvars.tmpl](3-postprovision/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
+
+    [TODO]: # (explain what all the variables are)
+
+3. Provision the support resources:
 
     ```bash
     terraform init
