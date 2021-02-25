@@ -151,7 +151,7 @@ Terraform stores state configuration in Azure Storage.
     | -- | -- | -- |
     | ARM_SUBSCRIPTION_ID | The Azure subscription ID for the subscription where you want to provision the resources | In the Azure Portal |
     | ARM_TENANT_ID | The Azure Tenant ID for the tenant where you want to provision the resources | In the Azure Portal |
-    | ARM_CLIENT_ID | The **magicaks-terraform** service principal id | Saved in step 5.1 |
+    | ARM_CLIENT_ID | The **magicaks-terraform** service principal ID | Saved in step 5.1 |
     | ARM_CLIENT_SECRET | The **magicaks-terraform** service principal password | Saved in step 5.1 |
     | ARM_ACCESS_KEY | Terraform state storage access key | See step 6 |
 
