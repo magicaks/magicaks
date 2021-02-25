@@ -59,7 +59,7 @@ You can do everything in this section once, and reuse the assets when spinning u
 
 ### 3. Set up the admin repository and configure RBAC
 
-1. Duplicate the [Fabrikate high-level definitions (HLD) repository](https://github.com/magicaks/fabrikate-defs). We recommended making this repository private. You will use this repository, for example, to generate RBAC and Azure Monitor configuration.
+1. Duplicate the [Fabrikate high-level definitions (HLD) repository](https://github.com/magicaks/fabrikate-defs). We recommend making this repository private. You will use this repository, for example, to generate RBAC and Azure Monitor configuration.
 1. Follow the steps in the [Fabrikate definitions repository README](https://github.com/magicaks/fabrikate-defs/blob/master/README.md) to set up RBAC for your cluster.
 
 > **Note:** Make sure you finish the steps in the README before you continue.
@@ -78,7 +78,7 @@ This is user workloads manifest repo where you list non-privileged workloads. [F
 
     ```bash
     az ad sp create-for-rbac --role="Contributor" --name "magicaks-terraform" --scopes="/subscriptions/SUBSCRIPTION_ID"
-    OBJECT_ID=$(az ad sp show --id app_id_from_above --query objectId)
+    eval OBJECT_ID=$(az ad sp show --id app_id_from_above --query objectId)
     az role assignment create --assignee-object-id $OBJECT_ID --role "Resource Policy Contributor" # Needed to assign Azure Policy to cluster.
     ```
 
@@ -151,7 +151,7 @@ Terraform stores state configuration in Azure Storage.
     | -- | -- | -- |
     | ARM_SUBSCRIPTION_ID | The Azure subscription ID for the subscription where you want to provision the resources | In the Azure Portal |
     | ARM_TENANT_ID | The Azure Tenant ID for the tenant where you want to provision the resources | In the Azure Portal |
-    | ARM_CLIENT_ID | The **magicaks-terraform** service principal password | Saved in step 5.1 |
+    | ARM_CLIENT_ID | The **magicaks-terraform** service principal ID | Saved in step 5.1 |
     | ARM_CLIENT_SECRET | The **magicaks-terraform** service principal password | Saved in step 5.1 |
     | ARM_ACCESS_KEY | Terraform state storage access key | See step 6 |
 
