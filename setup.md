@@ -1,5 +1,7 @@
 # MagicAKS setup
 
+If you run into issues, check the [Troubleshooting](#Troubleshooting) section.
+
 > **Important:** There is a cost associated with provisioning these resources on Azure. Specifically, the Azure Firewall has an hourly billing rate. If you are setting this up for testing purposes, you should tear down all resources after testing to avoid high bills for resources you don't use.
 
 ## Software requirements
@@ -265,3 +267,15 @@ Congratulations, you have provisioned your AKS cluster with the following resour
 * Azure Policy enabled on the cluster (no policies assigned right now)
 * Azure Firewall integrated with network and application rules as recommended by AKS
 * Grafana connected to Log Analytics workspace of the cluster is running in Azure Container Instances backed by managed PostgreSQL database
+
+## Troubleshooting
+
+1. Terraform error
+
+    ```bash
+    Error: Failed to get existing workspaces: containers.Client#ListBlobs: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: Service returned an error. Status=403 Code="AuthenticationFailed" Message="Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature.\nRequestId:e4c5cf49-801e-0068-4539-0cb9e7000000\nTime:2021-02-26T12:18:40.6499706Z"
+    ```
+    This is due to WSL clock skew. Fix it by running this command:
+    ```bash
+    sudo hwclock -s
+    ```
