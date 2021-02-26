@@ -13,12 +13,7 @@ provider "azurerm" {
 }
 
 terraform {
-  backend "azurerm" {
-    resource_group_name  = "longlasting"
-    container_name = "tfstate"
-    key = "magicaks-cluster"
-    storage_account_name = "longlasting"
-  }
+  backend "azurerm" {}
 }
 
 resource "azurerm_resource_group" "rg" {

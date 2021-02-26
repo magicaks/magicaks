@@ -18,12 +18,7 @@ provider "azurerm" {
 }
 
 terraform {
-  backend "azurerm" {
-    resource_group_name  = "magicaks"
-    container_name = "tfstate"
-    key = "magicaks-postprovision"
-    storage_account_name = "longlasting"
-  }
+  backend "azurerm" {}
 }
 
 resource "kubernetes_namespace" "admin" {

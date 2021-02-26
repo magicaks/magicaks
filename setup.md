@@ -121,17 +121,13 @@ Terraform stores state configuration in Azure Storage.
 
 1. Note the storage account name, container name and storage access key. You will need the storage access key in step 7.
 
-1. Update the Terraform section of [1-preprovision/main.tf](./1-preprovision/main.tf) with your values for `resource_group_name`, `container_name`, and `storage_account_name`. Leave the key as `**"magicaks-longlasting"**`.
+1. Update the Terraform remote backend configuration variables in [backend.tfvars.tmpl](./backend.tfvars.tmpl) and remove the `.impl` postfix from the filename. Enter the values for `resource_group_name`, `container_name`, and `storage_account_name`. Leave the key as `**"magicaks-longlasting"**`. This is the configuration to store Terraform state in an Azure Storage Account.
 
-    ```terraform
-    terraform {
-        backend "azurerm" {
-            resource_group_name  = "longlasting"
-            container_name = "tfstate"
-            key = "magicaks-longlasting"
-            storage_account_name = "longlasting"
-        }
-    }
+    ```bash
+    resource_group_name  = "longlasting"
+    container_name = "tfstate"
+    key = "magicaks-longlasting"
+    storage_account_name = "longlasting"
     ```
 
 ### 7. Set up the environment variables for Terraform
@@ -145,6 +141,8 @@ Terraform stores state configuration in Azure Storage.
     export ARM_CLIENT_SECRET=
     # Storage access key where the terraform state information is to be stored.
     export ARM_ACCESS_KEY=
+    # Applies the Terraform remote backend configuration and 'Terraform init' commands
+    export TF_CLI_ARGS_init='-backend-config=../backend.tfvars'
     ```
 
     | Environment variable | Description | Where to find it |
@@ -154,6 +152,7 @@ Terraform stores state configuration in Azure Storage.
     | ARM_CLIENT_ID | The **magicaks-terraform** service principal ID | Saved in step 5.1 |
     | ARM_CLIENT_SECRET | The **magicaks-terraform** service principal password | Saved in step 5.1 |
     | ARM_ACCESS_KEY | Terraform state storage access key | See step 6 |
+    | TF_CLI_ARGS_init | Terraform remote storage configuration file location | [backend.tfvars](./backend.tfvars) |
 
 1. Set the environment variables
 
@@ -175,8 +174,6 @@ Before we provision the AKS clusters, we will provision some common resources th
 * [Azure Firewall](https://docs.microsoft.com/en-us/azure/firewall/overview)
 * [Azure Key Vault](https://docs.microsoft.com/en-us/azure/key-vault/general/basic-concepts)
 * [Azure Container Registry](https://docs.microsoft.com/en-us/azure/container-registry/)
-
-1. Open `main.tf` to verify that you have set the Terraform backend variables appropriately and that the names for other resources look OK.
 
 1. *Optionally* set the `location`, `resource_group_name` and `cluster_name` variables in `terraform.tfvars.tmpl` and remove the `.impl` postfix from the filename. (If you don't do this, Terraform will ask you for these variables when you execute the Terraform scripts.)
 
@@ -220,9 +217,8 @@ Before we provision the AKS clusters, we will provision some common resources th
 
     You will need to provide the managed identity `MSI_RESOURCE_ID` as a variable to Terraform when creating the cluster.
 
-3. Verify that the Terraform backend values match your storage account in [./2-provision-aks/main.tf](2-provision-aks/main.tf).
-4. Fill out the Terraform parameters in [2-provision-aks/terraform.tfvars.tmpl](2-provision-aks/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
-5. Provision the cluster:
+3. Fill out the Terraform parameters in [2-provision-aks/terraform.tfvars.tmpl](2-provision-aks/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
+4. Provision the cluster:
 
     ```bash
     terraform init
