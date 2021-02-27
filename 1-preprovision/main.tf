@@ -13,7 +13,9 @@ provider "azurerm" {
 }
 
 terraform {
-  backend "azurerm" {}
+  backend "azurerm" {
+    key = "magicaks-preprovision"
+  }
 }
 
 resource "azurerm_resource_group" "longlasting" {
