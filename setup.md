@@ -270,7 +270,7 @@ Congratulations, you have provisioned your AKS cluster with the following resour
 
 ## Troubleshooting
 
-1. Terraform error
+- Terraform auth error
 
     ```bash
     Error: Failed to get existing workspaces: containers.Client#ListBlobs: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: Service returned an error. Status=403 Code="AuthenticationFailed" Message="Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature.\nRequestId:e4c5cf49-801e-0068-4539-0cb9e7000000\nTime:2021-02-26T12:18:40.6499706Z"
@@ -279,3 +279,19 @@ Congratulations, you have provisioned your AKS cluster with the following resour
     ```bash
     sudo hwclock -s
     ```
+
+-  Line endings not correct for bash scripts.
+
+    ```bash
+    Error: Error running command '/mnt/c//2-provision-aks/getcreds.sh ': exit status 127. Output: /bin/sh: 1: /mnt/c//2-provision-aks/getcreds.sh: not found
+    ```
+    *We know it's the 21 century, but check the line endings*. Line endings must LF instead of CRLF (this may happen if you clone the repo from windows for example.) - check the line endings of all sh files in the repo at once and set them to LF.
+
+    You can use the `dos2unix` utilty to do the conversion. Install it via apt-get.
+
+- When does this happen Tess?
+
+    ```bash
+    Error: failed to create resource: namespaces "app1" not found
+    ```
+    This is due to a timing issue where `app1` is not yet created - Wait a few minutes and rerun the apply, and it should work.
