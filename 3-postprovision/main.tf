@@ -18,7 +18,9 @@ provider "azurerm" {
 }
 
 terraform {
-  backend "azurerm" {}
+  backend "azurerm" {
+    key = "magicaks-postprovision"
+  }
 }
 
 resource "kubernetes_namespace" "admin" {

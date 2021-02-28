@@ -123,14 +123,14 @@ Terraform stores state configuration in Azure Storage.
 
 1. Note the storage account name, container name and storage access key. You will need the storage access key in step 7.
 
-1. Update the Terraform remote backend configuration variables in [backend.tfvars.tmpl](./backend.tfvars.tmpl) and remove the `.impl` postfix from the filename. Enter the values for `resource_group_name`, `container_name`, and `storage_account_name`. Leave the key as `**"magicaks-longlasting"**`. This is the configuration to store Terraform state in an Azure Storage Account.
+1. Copy the Terraform remote backend configuration [backend.tfvars.tmpl](./backend.tfvars.tmpl) file and remove the `.tmpl` postfix from the filename. Update the variables for the values `resource_group_name`, `container_name`, and `storage_account_name`. This is the configuration to store Terraform state in an Azure Storage Account.
 
     ```bash
     resource_group_name  = "longlasting"
     container_name = "tfstate"
-    key = "magicaks-longlasting"
     storage_account_name = "longlasting"
     ```
+    > In each of the Terraform files for preprovision, provision and postprovision, the [Terraform remote backend configuration](https://www.terraform.io/docs/language/settings/backends/azurerm.html) key is pre-configured. This will create one state file per step named `magicaks-preprovision`, `magicaks-provision` and `magicaks-postprovision`.
 
 ### 7. Set up the environment variables for Terraform
 
