@@ -297,4 +297,4 @@ Congratulations, you have provisioned your AKS cluster with the following resour
     Error: failed to create resource: namespaces "app1" not found
     ```
 
-    This is due to a timing issue where `app1` is not yet created - Wait a few minutes and rerun the apply, and it should work.
+    This is due to a timing issue where `app1` is not yet created - wait a few minutes, rerun the apply and it should work.
