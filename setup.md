@@ -1,5 +1,7 @@
 # MagicAKS setup
 
+If you run into issues, check the [Troubleshooting](#Troubleshooting) section.
+
 > **Important:** There is a cost associated with provisioning these resources on Azure. Specifically, the Azure Firewall has an hourly billing rate. If you are setting this up for testing purposes, you should tear down all resources after testing to avoid high bills for resources you don't use.
 
 ## Software requirements
@@ -282,3 +284,35 @@ Congratulations, you have provisioned your AKS cluster with the following resour
 * Azure Policy enabled on the cluster (no policies assigned right now)
 * Azure Firewall integrated with network and application rules as recommended by AKS
 * Grafana connected to Log Analytics workspace of the cluster is running in Azure Container Instances backed by managed PostgreSQL database
+
+## Troubleshooting
+
+* Terraform authentication error.
+
+    ```bash
+    Error: Failed to get existing workspaces: containers.Client#ListBlobs: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: Service returned an error. Status=403 Code="AuthenticationFailed" Message="Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature.\nRequestId:e4c5cf49-801e-0068-4539-0cb9e7000000\nTime:2021-02-26T12:18:40.6499706Z"
+    ```
+
+    This is due to WSL clock skew. Fix it by running this command:
+
+    ```bash
+    sudo hwclock -s
+    ```
+
+* Line endings not correct for bash scripts, e.g. by Git clone/pull from Windows (with CRLF as the default).
+
+    ```bash
+    Error: Error running command '/mnt/c//2-provision-aks/getcreds.sh ': exit status 127. Output: /bin/sh: 1: /mnt/c//2-provision-aks/getcreds.sh: not found
+    ```
+
+    *We know it's the 21 century, but check the line endings*. Line endings must be in LF format instead of CRLF. You may run into this issue, if you clone the repository in Windows for example. Check the line endings of all the bash script files (`*.sh`) in the repository and set them to LF format to correct the problem.
+
+    You can use the `dos2unix` utility to do the conversion. Install it via `apt-get`.
+
+* In step 3 postprovision you might run into this error.
+
+    ```bash
+    Error: failed to create resource: namespaces "app1" not found
+    ```
+
+    This is due to a timing issue where `app1` is not yet created - wait a few minutes, rerun the apply and it should work. We are investigating the issue (#66).
