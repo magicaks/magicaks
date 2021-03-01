@@ -27,6 +27,8 @@ You need to install:
 
 You can also use this [Docker dev container](./utils/docker-dev-env/README.md), if you don't want to install the tools in your native environment, but note that there can be additional considerations using the Docker development environment that are not covered by this guide.
 
+**Optional:** Run `./utils/verify_prerequisites.sh` to verify that you have installed all pre-requisites for MagicAKS
+
 > **Note:** The installation assumes that you have an Azure Active Directory (AAD), and that you are the owner/admin of this directory or can request to create AAD apps. We will need this for [role-based access control (RBAC)](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) setup for Kubernetes. For testing purposes you can [create a personal AAD](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-access-create-new-tenant).
 
 ## One time setup
@@ -35,9 +37,23 @@ Before provisioning the AKS resources we need to prepare some repositories, set 
 
 You can do everything in this section once, and reuse the assets when spinning up new AKS clusters.
 
-### 1. Duplicate this repository
+### 1. Duplicate repositories
 
-[Duplicate](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository) this repository in GitHub and make your repository private. You will need to change some of the Terraform scripts etc. throughout this setup.
+1. Create a new, **private** `magicaks` repository for yourself using the following link: [`https://github.com/magicaks/magicaks/generate`](https://github.com/magicaks/magicaks/generate)
+1. Clone the repository
+1. [Create a personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with **repo** scope (full control of private repositories)
+    > **Note:** Make sure to copy the access token value once created, because you cannot access it again.
+1. Run the repository copier script:
+
+    ```bash
+    ./utils/scripts/copy-repos.sh <GitHub personal access token value>
+    ```
+
+    * This will copy the following three repositories:
+        * [magicaks/fabrikate-defs](https://github.com/magicaks/fabrikate-defs)
+        * [magicaks/k8sworkloads](https://github.com/magicaks/k8sworkloads)
+        * [magicaks/k8smanifests](https://github.com/magicaks/k8smanifests)
+    * Alternatively, you create the repositories manually using the same methods as for the main (`magicaks`) repository in step 1
 
 ### 2. Create an AKS cluster admins AAD group
 
@@ -59,18 +75,14 @@ You can do everything in this section once, and reuse the assets when spinning u
 
 ### 3. Set up the admin repository and configure RBAC
 
-1. Duplicate the [Fabrikate high-level definitions (HLD) repository](https://github.com/magicaks/fabrikate-defs). We recommend making this repository private. You will use this repository, for example, to generate RBAC and Azure Monitor configuration.
-1. Follow the steps in the [Fabrikate definitions repository README](https://github.com/magicaks/fabrikate-defs/blob/master/README.md) to set up RBAC for your cluster.
+Follow the steps in your copy of the [Fabrikate definitions repository README](https://github.com/magicaks/fabrikate-defs/blob/master/README.md) to set up RBAC for your cluster.
 
-> **Note:** Make sure you finish the steps in the README before you continue.
+> **Note:**
+>
+> * Make sure you finish the steps in the README before you continue
+> * You can safely ignore the steps in the README you've already completed such as duplicating the workloads repository and creating a personal access token
 
-### 4. Set up the user workloads manifest repository
-
-1. Duplicate the [k8sworkloads repository](https://github.com/magicaks/k8sworkloads). We recommended making this repository private.
-
-This is user workloads manifest repo where you list non-privileged workloads. [Flux (GitOps)](https://fluxcd.io/) non-admin controller will track this repository.
-
-### 5. Create service principals for provisioning resources
+### 4. Create service principals for provisioning resources
 
 1. Create a service principal (**magicaks-terraform**) that terraform can use for deploying resources. **Write down the id and password for later.**
 
@@ -92,7 +104,7 @@ This is user workloads manifest repo where you list non-privileged workloads. [F
 
     > **NOTE:** You may get "Found an existing application instance of "GUID". We will patch it". This means that a service principal with the same already exists in the tenant. Change the name of the service principal and try again.
 
-### 6. Configure Terraform state
+### 5. Configure Terraform state
 
 Terraform stores state configuration in Azure Storage.
 
@@ -135,7 +147,7 @@ Terraform stores state configuration in Azure Storage.
 
     > In each of the Terraform files for preprovision, provision and postprovision, the [Terraform remote backend configuration](https://www.terraform.io/docs/language/settings/backends/azurerm.html) key is pre-configured. This will create one state file per step named `magicaks-preprovision`, `magicaks-provision` and `magicaks-postprovision`.
 
-### 7. Set up the environment variables for Terraform
+### 6. Set up the environment variables for Terraform
 
 1. Create a file called .env with the values gathered in the previous steps
 
