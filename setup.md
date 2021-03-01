@@ -76,8 +76,10 @@ This is user workloads manifest repo where you list non-privileged workloads. [F
 
     > **Note:** Replace `SUBSCRIPTION_ID` with your own Azure subscription ID.
 
+    > **Note:** The tenant of active directory used below should be the one in which the subscription **SUBSCRIPTION_ID** exists. If your active directory where RBAC is managed is different from where subscription is present you need to log into the correct tenant using ``az login --tenant tenant_id`` before running the following commands.
+
     ```bash
-    az ad sp create-for-rbac --role="Contributor" --name "magicaks-terraform" --scopes="/subscriptions/SUBSCRIPTION_ID"
+    az ad sp create-for-rbac --role="Contributor" --name "http://magicaks-terraform" --scopes="/subscriptions/SUBSCRIPTION_ID"
     eval OBJECT_ID=$(az ad sp show --id app_id_from_above --query objectId)
     az role assignment create --assignee-object-id $OBJECT_ID --role "Resource Policy Contributor" # Needed to assign Azure Policy to cluster.
     ```
@@ -85,8 +87,10 @@ This is user workloads manifest repo where you list non-privileged workloads. [F
 1. Create a service principal (**magicaks-grafana**) that Grafana can use for talking to Log Analytics backend. We restrict this service principal to **Monitoring Reader** role.
 
     ```bash
-    az ad sp create-for-rbac --role "Monitoring Reader" --name "magicaks-grafana"
+    az ad sp create-for-rbac --role "Monitoring Reader" --name "http://magicaks-grafana"
     ```
+
+    > **NOTE:** You may get "Found an existing application instance of "GUID". We will patch it". This means that a service principal with the same already exists in the tenant. Change the name of the service principal and try again.
 
 ### 6. Configure Terraform state
 
@@ -128,6 +132,7 @@ Terraform stores state configuration in Azure Storage.
     container_name = "tfstate"
     storage_account_name = "longlasting"
     ```
+
     > In each of the Terraform files for preprovision, provision and postprovision, the [Terraform remote backend configuration](https://www.terraform.io/docs/language/settings/backends/azurerm.html) key is pre-configured. This will create one state file per step named `magicaks-preprovision`, `magicaks-provision` and `magicaks-postprovision`.
 
 ### 7. Set up the environment variables for Terraform
