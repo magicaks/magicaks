@@ -88,8 +88,10 @@ Follow the steps in your copy of the [Fabrikate definitions repository README](h
 
     > **Note:** Replace `SUBSCRIPTION_ID` with your own Azure subscription ID.
 
+    > **Note:** The tenant of active directory used below should be the one in which the subscription **SUBSCRIPTION_ID** exists. If your active directory where RBAC is managed is different from where subscription is present you need to log into the correct tenant using ``az login --tenant tenant_id`` before running the following commands.
+
     ```bash
-    az ad sp create-for-rbac --role="Contributor" --name "magicaks-terraform" --scopes="/subscriptions/SUBSCRIPTION_ID"
+    az ad sp create-for-rbac --role="Contributor" --name "http://magicaks-terraform" --scopes="/subscriptions/SUBSCRIPTION_ID"
     eval OBJECT_ID=$(az ad sp show --id app_id_from_above --query objectId)
     az role assignment create --assignee-object-id $OBJECT_ID --role "Resource Policy Contributor" # Needed to assign Azure Policy to cluster.
     ```
@@ -97,8 +99,10 @@ Follow the steps in your copy of the [Fabrikate definitions repository README](h
 1. Create a service principal (**magicaks-grafana**) that Grafana can use for talking to Log Analytics backend. We restrict this service principal to **Monitoring Reader** role.
 
     ```bash
-    az ad sp create-for-rbac --role "Monitoring Reader" --name "magicaks-grafana"
+    az ad sp create-for-rbac --role "Monitoring Reader" --name "http://magicaks-grafana"
     ```
+
+    > **Note:** You may get "Found an existing application instance of "GUID". We will patch it". This means that a service principal with the same already exists in the tenant. Change the name of the service principal and try again.
 
 ### 5. Configure Terraform state
 
