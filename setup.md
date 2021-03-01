@@ -27,6 +27,8 @@ You need to install:
 
 You can also use this [Docker dev container](./utils/docker-dev-env/README.md), if you don't want to install the tools in your native environment, but note that there can be additional considerations using the Docker development environment that are not covered by this guide.
 
+**Optional:** Run `./utils/verify_prerequisites.sh` to verify that you have installed all pre-requisites for MagicAKS
+
 > **Note:** The installation assumes that you have an Azure Active Directory (AAD), and that you are the owner/admin of this directory or can request to create AAD apps. We will need this for [role-based access control (RBAC)](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) setup for Kubernetes. For testing purposes you can [create a personal AAD](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-access-create-new-tenant).
 
 ## One time setup
