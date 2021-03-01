@@ -8,13 +8,9 @@ variable log_analytics_workspace_name {
     default = "k8sLogAnalyticsWorkspace"
 }
 
-variable log_analytics_workspace_location {}
-
 variable log_analytics_workspace_sku {
     default = "PerGB2018"
 }
-
-variable "dns_prefix" {}
 
 variable cluster_name {}
 
