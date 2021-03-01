@@ -290,7 +290,7 @@ Congratulations, you have provisioned your AKS cluster with the following resour
 
     *We know it's the 21 century, but check the line endings*. Line endings must be in LF format instead of CRLF. You may run into this issue, if you clone the repository in Windows for example. Check the line endings of all the bash script files (`*.sh`) in the repository and set them to LF format to correct the problem.
 
-    You can use the `dos2unix` utilty to do the conversion. Install it via apt-get.
+    You can use the `dos2unix` utility to do the conversion. Install it via `apt-get`.
 
 - When does this happen Tess?
 
