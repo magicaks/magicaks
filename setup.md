@@ -292,7 +292,7 @@ Congratulations, you have provisioned your AKS cluster with the following resour
 
     You can use the `dos2unix` utility to do the conversion. Install it via `apt-get`.
 
-- When does this happen Tess?
+* When does this happen, Tess?
 
     ```bash
     Error: failed to create resource: namespaces "app1" not found
