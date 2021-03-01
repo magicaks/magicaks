@@ -287,7 +287,7 @@ Congratulations, you have provisioned your AKS cluster with the following resour
     ```bash
     Error: Error running command '/mnt/c//2-provision-aks/getcreds.sh ': exit status 127. Output: /bin/sh: 1: /mnt/c//2-provision-aks/getcreds.sh: not found
     ```
-    *We know it's the 21 century, but check the line endings*. Line endings must LF instead of CRLF (this may happen if you clone the repo from windows for example.) - check the line endings of all sh files in the repo at once and set them to LF.
+    *We know it's the 21 century, but check the line endings*. Line endings must be in LF format instead of CRLF. You may run into this issue, if you clone the repository in Windows for example. Check the line endings of all the bash script files (`*.sh`) in the repository and set them to LF format to correct the problem.
 
     You can use the `dos2unix` utilty to do the conversion. Install it via apt-get.
 
