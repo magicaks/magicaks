@@ -110,39 +110,20 @@ Terraform stores state configuration in Azure Storage.
 
 1. If you don't have a storage account to use for Terraform state already configured, create a resource group and a storage account with a container per the instructions from the Microsoft docs: [Tutorial: Store Terraform state in Azure Storage](https://docs.microsoft.com/en-us/azure/developer/terraform/store-state-in-azure-storage):
 
-    ```bash
-    #!/bin/bash
+    You can use the configure-terraform-storage.sh script for this, supply the location where you want your resources to be provisioned.
 
-    RESOURCE_GROUP_NAME=tstate
-    STORAGE_ACCOUNT_NAME=tstate$RANDOM
-    CONTAINER_NAME=tstate
-    LOCATION=eastus
-
-    # Create resource group
-    az group create --name $RESOURCE_GROUP_NAME --location $LOCATION
-
-    # Create storage account
-    az storage account create --resource-group $RESOURCE_GROUP_NAME --name $STORAGE_ACCOUNT_NAME --sku Standard_LRS --encryption-services blob
-
-    # Get storage account key
-    ACCOUNT_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP_NAME --account-name $STORAGE_ACCOUNT_NAME --query '[0].value' -o tsv)
-
-    # Create blob container
-    az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME --account-key $ACCOUNT_KEY
-
-    echo "storage_account_name: $STORAGE_ACCOUNT_NAME"
-    echo "container_name: $CONTAINER_NAME"
-    echo "access_key: $ACCOUNT_KEY"
+    ```cmd
+    ./utils/scripts/configure-terraform-storage.sh westeurope
     ```
 
-1. Note the storage account name, container name and storage access key. You will need the storage access key in step 7.
+2. Note the resource group name, storage account name, container name and storage access key. You will need the storage access key in step 6.
 
-1. Copy the Terraform remote backend configuration [backend.tfvars.tmpl](./backend.tfvars.tmpl) file and remove the `.tmpl` postfix from the filename. Update the variables for the values `resource_group_name`, `container_name`, and `storage_account_name`. This is the configuration to store Terraform state in an Azure Storage Account.
+3. Copy the Terraform remote backend configuration [backend.tfvars.tmpl](./backend.tfvars.tmpl) file and remove the `.tmpl` postfix from the filename. Update the variables for the values `resource_group_name`, `container_name`, and `storage_account_name`. This is the configuration to store Terraform state in an Azure Storage Account.
 
     ```bash
-    resource_group_name  = "longlasting"
+    resource_group_name  = "rg-terraform-state"
     container_name = "tfstate"
-    storage_account_name = "longlasting"
+    storage_account_name = "tfstate1234"
     ```
 
     > In each of the Terraform files for preprovision, provision and postprovision, the [Terraform remote backend configuration](https://www.terraform.io/docs/language/settings/backends/azurerm.html) key is pre-configured. This will create one state file per step named `magicaks-preprovision`, `magicaks-provision` and `magicaks-postprovision`.
@@ -192,11 +173,14 @@ Before we provision the AKS clusters, we will provision some common resources th
 * [Azure Key Vault](https://docs.microsoft.com/en-us/azure/key-vault/general/basic-concepts)
 * [Azure Container Registry](https://docs.microsoft.com/en-us/azure/container-registry/)
 
-1. *Optionally* set the `location`, `resource_group_name` and `cluster_name` variables in `terraform.tfvars.tmpl` and remove the `.impl` postfix from the filename. (If you don't do this, Terraform will ask you for these variables when you execute the Terraform scripts.)
+1. Set the variables in `terraform.tfvars.tmpl` and remove the `.impl` postfix from the filename. (If you don't do this, Terraform will ask you for these variables when you execute the Terraform scripts.)
 
-    * **location** is the location where to create the resources, e.g. westeurope
-    * **resource_group_name** is the resource group name to create for the long lasting resources
-    * **cluster_name** is a prefix for many of the resources, keep this short, and without dashes to fulfill [Azure naming requirements](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules)
+    | Variable | Description | Example |
+    | -- | -- | -- |
+    | location | The location where to create the resources | "westeurope" |
+    | resource_group_name | The resource group name to create for the shared resources | "rg-magicaks-shared" |
+    | tenant_id | The [Azure Tenant ID](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant) for the tenant where the resources should be created. | "GUID" |
+    | resource_prefix | A unique string used to name some of the resources that need globally unique names. Keep this short and without dashes to fulfill [Azure naming requirements](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules) | "magic123" |
 
 1. Execute the Terraform scripts to provision the resources (from the [1-preprovision](./1-preprovision/) folder):
 
@@ -208,13 +192,15 @@ Before we provision the AKS clusters, we will provision some common resources th
 
 > Note: It's normal for this to take a long time to provision, especially the Firewall, so relax and grab a coffee.
 
+After provisioning the resources take note of the terraform output variables, you will be using them in upcoming steps.
+
 ## Provision an AKS cluster
 
-1. Create a custom Grafana image (from the [./utils/grafana/](./utils/grafana/) folder). **NOTE: Replace registry_name with the name of the Azure Container Registry created during pre-provisioning**
+1. Create a custom Grafana image (from the [./utils/grafana/](./utils/grafana/) folder). **NOTE: Replace acr_name with the name of the Azure Container Registry created during pre-provisioning**
 
     ```bash
-    export registry=<registry_name>
-    az acr build -t $registry.azurecr.io/grafana:v1 -r $registry .
+    eval ACR_NAME=<acr_name>
+    az acr build -t $ACR_NAME.azurecr.io/grafana:v1 -r $ACR_NAME .
     ```
 
 2. Create an identity for the cluster
@@ -222,12 +208,13 @@ Before we provision the AKS clusters, we will provision some common resources th
     MagicAKS creates a managed identity cluster. We create the identity for this cluster in the resource group with other long lasting resources, so the permissions remain even if we recreate the cluster. To create an identity follow the steps below:
 
     ```bash
-    export RG_WHERE_NETWORK_EXISTS=magicaks-longlasting
+    eval RG_WHERE_NETWORK_EXISTS=rg-magicaks-shared
     az identity create --name magicaksmsi --resource-group $RG_WHERE_NETWORK_EXIST
-    MSI_CLIENT_ID=$(az identity show -n magicaksmsi -g $RG_WHERE_NETWORK_EXIST -o json | jq -r ".clientId")
-    MSI_RESOURCE_ID=$(az identity show -n magicaksmsi -g $RG_WHERE_CLUSTER_EXISTS -o json | jq -r ".id")
+    eval MSI_CLIENT_ID=$(az identity show -n magicaksmsi -g $RG_WHERE_NETWORK_EXIST -o json | jq -r ".clientId")
+    eval MSI_RESOURCE_ID=$(az identity show -n magicaksmsi -g $RG_WHERE_NETWORK_EXIST -o json | jq -r ".id")
     az role assignment create --role "Network Contributor" --assignee $MSI_CLIENT_ID -g $RG_WHERE_NETWORK_EXISTS
     az role assignment create --role "Virtual Machine Contributor" --assignee $MSI_CLIENT_ID -g $RG_WHERE_NETWORK_EXISTS
+    echo "MSI_RESOURCE_ID: $MSI_RESOURCE_ID"
     ```
 
     > **Note:** MagicAKS is not creating a system assigned managed identity, due to current [limitations](https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#create-an-aks-cluster-with-managed-identities) of self-managed VNet and static IP address outside the MC_ resource group.

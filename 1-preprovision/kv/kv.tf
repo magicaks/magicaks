@@ -1,12 +1,12 @@
 data "azurerm_client_config" "current" {
 }
 
-resource "azurerm_key_vault" "keyvault" {
-  name                        = "${var.cluster_name}-keyvault"
+resource "azurerm_key_vault" "key_vault" {
+  name                        = "kv-${var.resource_prefix}"
   location                    = var.location
   tenant_id                   = var.tenant_id
   resource_group_name         = var.resource_group_name
-  
+
   enabled_for_deployment          = true
   enabled_for_disk_encryption     = true
   enabled_for_template_deployment = true
