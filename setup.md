@@ -102,7 +102,7 @@ Follow the steps in your copy of the [Fabrikate definitions repository README](h
     az ad sp create-for-rbac --role "Monitoring Reader" --name "http://magicaks-grafana"
     ```
 
-    > **NOTE:** You may get "Found an existing application instance of "GUID". We will patch it". This means that a service principal with the same already exists in the tenant. Change the name of the service principal and try again.
+    > **Note:** You may get "Found an existing application instance of "GUID". We will patch it". This means that a service principal with the same already exists in the tenant. Change the name of the service principal and try again.
 
 ### 5. Configure Terraform state
 
