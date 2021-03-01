@@ -280,7 +280,7 @@ Congratulations, you have provisioned your AKS cluster with the following resour
     sudo hwclock -s
     ```
 
--  Line endings not correct for bash scripts.
+*  Line endings not correct for bash scripts
 
     ```bash
     Error: Error running command '/mnt/c//2-provision-aks/getcreds.sh ': exit status 127. Output: /bin/sh: 1: /mnt/c//2-provision-aks/getcreds.sh: not found
