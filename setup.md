@@ -270,7 +270,7 @@ Congratulations, you have provisioned your AKS cluster with the following resour
 
 ## Troubleshooting
 
-- Terraform auth error
+* Terraform authentication error
 
     ```bash
     Error: Failed to get existing workspaces: containers.Client#ListBlobs: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: Service returned an error. Status=403 Code="AuthenticationFailed" Message="Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature.\nRequestId:e4c5cf49-801e-0068-4539-0cb9e7000000\nTime:2021-02-26T12:18:40.6499706Z"
