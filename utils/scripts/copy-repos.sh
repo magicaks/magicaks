@@ -19,7 +19,7 @@ then
     echo
     echo "Usage: $0 <GitHub personal access token value>"
     echo
-    echo "Note: The personal access token must have "repo" permission set"
+    echo "Note: The personal access token must have \"repo\" permission set"
     echo "See https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token for more information"
     exit 1
 fi
@@ -31,14 +31,14 @@ for REPOSITORY in ${REPOSITORIES[@]}; do
     echo "Copying repository \"$REPOSITORY\""
     echo "Description: $DESCRIPTION"
 
-    RESPONSE_BODY='{"name":"'"$REPOSITORY"'","description":"'"$DESCRIPTION"'","private":true}'
+    REQUEST_BODY='{"name":"'"$REPOSITORY"'","description":"'"$DESCRIPTION"'","private":true}'
 
     # Create a new repository from the template
     curl \
         --header "Authorization: token $PERSONAL_ACCESS_TOKEN" \
         --header "Accept: application/vnd.github.baptiste-preview+json" \
         --request POST \
-        --data "$RESPONSE_BODY" \
+        --data "$REQUEST_BODY" \
         $GITHUB_REPOS_API_BASE_URL/magicaks/$REPOSITORY/generate
 done
 

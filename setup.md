@@ -53,7 +53,7 @@ You can do everything in this section once, and reuse the assets when spinning u
         * [magicaks/fabrikate-defs](https://github.com/magicaks/fabrikate-defs)
         * [magicaks/k8sworkloads](https://github.com/magicaks/k8sworkloads)
         * [magicaks/k8smanifests](https://github.com/magicaks/k8smanifests)
-    * Alternatively, you create the repositories manually using the same methods as for the main (`magicaks`) repository in step 1
+    * Alternatively, you create the repositories manually using the same method as for the main (`magicaks`) repository in step 1
 
 ### 2. Create an AKS cluster admins AAD group
 
@@ -80,7 +80,7 @@ Follow the steps in your copy of the [Fabrikate definitions repository README](h
 > **Note:**
 >
 > * Make sure you finish the steps in the README before you continue
-> * You can safely ignore the steps in the README you've already completed such as duplicating the workloads repository and creating a personal access token
+> * You can safely ignore the steps in the README you've already completed such as duplicating the manifest repository and creating a personal access token
 
 ### 4. Create service principals for provisioning resources
 
