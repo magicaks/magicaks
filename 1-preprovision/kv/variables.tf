@@ -1,4 +1,4 @@
-variable "resource_prefix" {}
+variable "resource_suffix" {}
 variable "location" {}
 variable "resource_group_name" {}
 variable "tenant_id" {}

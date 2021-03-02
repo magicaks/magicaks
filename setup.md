@@ -180,7 +180,7 @@ Before we provision the AKS clusters, we will provision some common resources th
     | location | The location where to create the resources | "westeurope" |
     | resource_group_name | The resource group name to create for the shared resources | "rg-magicaks-shared" |
     | tenant_id | The [Azure Tenant ID](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant) for the tenant where the resources should be created. | "GUID" |
-    | resource_prefix | A unique string used to name some of the resources that need globally unique names. Keep this short and without dashes to fulfill [Azure naming requirements](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules) | "magic123" |
+    | resource_suffix | A unique string used to for resources that need globally unique names. Keep this short and without dashes to fulfill [Azure naming requirements](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules) | "magic123" |
 
 1. Execute the Terraform scripts to provision the resources (from the [1-preprovision](./1-preprovision/) folder):
 

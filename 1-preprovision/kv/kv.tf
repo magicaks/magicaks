@@ -2,7 +2,7 @@ data "azurerm_client_config" "current" {
 }
 
 resource "azurerm_key_vault" "key_vault" {
-  name                        = "kv-${var.resource_prefix}"
+  name                        = "kv-${var.resource_suffix}"
   location                    = var.location
   tenant_id                   = var.tenant_id
   resource_group_name         = var.resource_group_name

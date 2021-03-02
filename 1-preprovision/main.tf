@@ -27,7 +27,7 @@ module "networking" {
   source = "./networking"
   location = var.location
   resource_group_name = azurerm_resource_group.shared_rg.name
-  resource_prefix = var.resource_prefix
+  resource_suffix = var.resource_suffix
 }
 
 module "acr" {
@@ -35,7 +35,7 @@ module "acr" {
   location = var.location
   resource_group_name = azurerm_resource_group.shared_rg.name
   subnet_id = module.networking.k8s_subnet_id
-  resource_prefix = var.resource_prefix
+  resource_suffix = var.resource_suffix
 }
 
 module "kv" {
@@ -43,7 +43,7 @@ module "kv" {
   location = var.location
   resource_group_name = azurerm_resource_group.shared_rg.name
   k8s_subnet_id = module.networking.k8s_subnet_id
-  resource_prefix = var.resource_prefix
+  resource_suffix = var.resource_suffix
   tenant_id = var.tenant_id
 }
 
