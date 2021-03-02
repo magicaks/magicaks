@@ -6,33 +6,33 @@ rg_name=$2
 # Provider register: Register the Azure Kubernetes Services provider
 cs_registered=`az provider show -n Microsoft.ContainerService -ojson --query registrationState`
 if test $cs_registered != \"Registered\"
-then 
+then
     az provider register --namespace Microsoft.ContainerService
-else 
+else
     echo "provider Microsoft.ContainerService already registered"
 fi
 
 # Provider register: Register the Azure Policy provider
 ap_registered=`az provider show -n Microsoft.PolicyInsights -o json --query registrationState`
 if test $ap_registered != \"Registered\"
-then 
+then
     az provider register --namespace Microsoft.PolicyInsights
-else 
+else
     echo "provider Microsoft.PolicyInsights already registered"
 fi
 
 # Feature register: enables installing the add-on
 feature_registerd=`az feature show --namespace Microsoft.ContainerService --name AKS-AzurePolicyAutoApprove --query properties.state`
 if test $feature_registerd != \"Registered\"
-then 
+then
     az feature register --namespace Microsoft.ContainerService --name AKS-AzurePolicyAutoApprove
 else
     echo "Microsoft.ContainerService AKS-AzurePolicyAutoApprove already registered"
 fi
 
 while test $feature_registerd != \"Registered\"
-do 
-    sleep 10; 
+do
+    sleep 10;
     feature_registerd=`az feature show --namespace Microsoft.ContainerService --name AKS-AzurePolicyAutoApprove --query properties.state`
 done
 
@@ -41,15 +41,15 @@ az provider register -n Microsoft.ContainerService
 
 feature_registerd=`az feature show --namespace Microsoft.PolicyInsights --name AKS-DataplaneAutoApprove --query  properties.state`
 if test $feature_registerd != \"Registered\"
-then 
+then
     az feature register --namespace Microsoft.PolicyInsights --name AKS-DataplaneAutoApprove
 else
     echo "Microsoft.PolicyInsights AKS-DataplaneAutoApprove already registered"
 fi
 
 while test $feature_registerd != \"Registered\"
-do 
-    sleep 10; 
+do
+    sleep 10;
     feature_registerd=`az feature show --namespace Microsoft.PolicyInsights --name AKS-DataplaneAutoApprove --query properties.state`
 done
 
