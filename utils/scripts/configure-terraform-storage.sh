@@ -4,7 +4,7 @@ LOCATION=$1
 
 if [ -z "$LOCATION" ]
 then
-    echo "Terraform state storage script script"
+    echo "Terraform state storage script"
     echo
     echo "Usage: $0 <azure resource location - e.g. eastus>"
     exit 1
