@@ -13,7 +13,6 @@ then
     exit 1
 fi
 
-eval RG_WHERE_NETWORK_EXISTS=rg-magicaks-shared
 az identity create --name magicaksmsi --resource-group $SHARED_RESOURCE_GROUP
 eval MSI_CLIENT_ID=$(az identity show -n magicaksmsi -g $SHARED_RESOURCE_GROUP -o json | jq -r ".clientId")
 eval MSI_RESOURCE_ID=$(az identity show -n magicaksmsi -g $SHARED_RESOURCE_GROUP -o json | jq -r ".id")
