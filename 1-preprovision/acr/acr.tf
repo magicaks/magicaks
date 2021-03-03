@@ -6,9 +6,9 @@ resource "azurerm_container_registry" "acr" {
   admin_enabled            = true
 
   network_rule_set {
-      virtual_network {
-          action = "Allow"
-          subnet_id = var.subnet_id
-      }
+    virtual_network {
+      action    = "Allow"
+      subnet_id = var.subnet_id
+    }
   }
 }

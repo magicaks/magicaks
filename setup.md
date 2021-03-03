@@ -98,7 +98,7 @@ Follow the steps in your copy of the [Fabrikate definitions repository README](h
     az role assignment create --assignee-object-id $OBJECT_ID --role "Resource Policy Contributor" # Needed to assign Azure Policy to cluster.
     ```
 
-1. Create a service principal (**magicaks-grafana**) that Grafana can use for talking to Log Analytics backend. We restrict this service principal to **Monitoring Reader** role.
+1. Create a service principal (**magicaks-grafana**) that Grafana can use for talking to Log Analytics backend. We restrict this service principal to **Monitoring Reader** role. **Write down the id and password for later**
 
     ```bash
     az ad sp create-for-rbac --role "Monitoring Reader" --name "http://magicaks-grafana"
@@ -192,38 +192,54 @@ Before we provision the AKS clusters, we will provision some common resources th
     terraform apply
     ```
 
-> Note: It's normal for this to take a long time to provision, especially the Firewall, so relax and grab a coffee.
+> **Note:** It's normal for this to take a long time to provision, especially the Firewall, so relax and grab a coffee.
 
 After provisioning the resources take note of the terraform output variables, you will be using them in upcoming steps.
 
 ## Provision an AKS cluster
 
-1. Create a custom Grafana image (from the [./utils/grafana/](./utils/grafana/) folder). **NOTE: Replace acr_name with the name of the Azure Container Registry created during pre-provisioning**
+1. Create a custom Grafana image (from the [./utils/grafana/](./utils/grafana/) folder).
+
+   > **Note:** Replace acr_name with the name of the Azure Container Registry created during pre-provisioning
 
     ```bash
     eval ACR_NAME=<acr_name>
     az acr build -t $ACR_NAME.azurecr.io/grafana:v1 -r $ACR_NAME .
     ```
 
-2. Create an identity for the cluster
+2. Create a managed identity for the cluster
 
-    MagicAKS creates a managed identity cluster. We create the identity for this cluster in the resource group with other long lasting resources, so the permissions remain even if we recreate the cluster. To create an identity follow the steps below:
+    MagicAKS creates a managed identity cluster. We create the identity for this cluster in the resource group with other shared resources, so the permissions remain even if we recreate the cluster. To create an identity run the [create-cluster-managed-identity.sh](utils/scripts/create-cluster-managed-identity.sh) script, providing the **resource_group_name** you entered in the terraform variables:
 
     ```bash
-    eval RG_WHERE_NETWORK_EXISTS=rg-magicaks-shared
-    az identity create --name magicaksmsi --resource-group $RG_WHERE_NETWORK_EXIST
-    eval MSI_CLIENT_ID=$(az identity show -n magicaksmsi -g $RG_WHERE_NETWORK_EXIST -o json | jq -r ".clientId")
-    eval MSI_RESOURCE_ID=$(az identity show -n magicaksmsi -g $RG_WHERE_NETWORK_EXIST -o json | jq -r ".id")
-    az role assignment create --role "Network Contributor" --assignee $MSI_CLIENT_ID -g $RG_WHERE_NETWORK_EXISTS
-    az role assignment create --role "Virtual Machine Contributor" --assignee $MSI_CLIENT_ID -g $RG_WHERE_NETWORK_EXISTS
-    echo "MSI_RESOURCE_ID: $MSI_RESOURCE_ID"
+    ./utils/scripts/create-cluster-managed-identity.sh rg-magicaks-shared
     ```
 
     > **Note:** MagicAKS is not creating a system assigned managed identity, due to current [limitations](https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#create-an-aks-cluster-with-managed-identities) of self-managed VNet and static IP address outside the MC_ resource group.
 
-    You will need to provide the managed identity `MSI_RESOURCE_ID` as a variable to Terraform when creating the cluster.
+    You will need to provide the **managed identity resource ID** (provided as output of the script) as a variable to Terraform when creating the cluster.
 
 3. Fill out the Terraform parameters in [2-provision-aks/terraform.tfvars.tmpl](2-provision-aks/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
+
+    | Variable | Description | Where do I find this | Example |
+    | -- | -- | -- | -- |
+    | cluster_name | A unique string used to for resources that need globally unique names. Keep this short and without dashes to fulfill [Azure naming requirements](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules) | You choose | "magic123" |
+    | location | The location where to create the resources | You choose | "westeurope" |
+    | subscription_id | Your Azure Subscription ID | | |
+    | tenant_id | The Azure Tenant ID for the tenant where the resources should be created. | [How to find](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant) | | |
+    | aad_tenant_id | The Azure Active Directory Tenant ID | | |
+    | key_vault_id | Resource ID for the key vault | From the previous terraform step | |
+    | cluster_support_db_admin_password | Password for the cluster support Postgres DB | Provide a strong password | |
+    | aci_subnet_id | Azure Container Instance subnet ID | From the previous terraform step | |
+    | k8s_subnet_id | Kubernetes subnet ID | From the previous terraform step | |
+    | admin_group_object_ids | Admin group object ID | From the "Create AKS cluster admins AAD group" step | |
+    | user_assigned_identity_resource_id | Managed Identity Resource ID | From `create-cluster-managed-identity.sh` | |
+    | grafana_admin_password | Grafana Admin Password | Provide a strong password | |
+    | aci_network_profile_id | Azure Container Instance Profile ID | From the previous terraform step | |
+    | acr_name | Azure Container Registry where the grafana image can be found | From the previous terraform step | |
+    | monitoring_reader_sp_client_id | Grafana Service Principal ID | From the "Create **magicaks-grafana**" step | |
+    | monitoring_reader_sp_client_secret | Grafana Service Principal Password | From the "Create **magicaks-grafana**" step | |
+
 4. Provision the cluster:
 
     ```bash
@@ -231,6 +247,8 @@ After provisioning the resources take note of the terraform output variables, yo
     terraform plan
     terraform apply
     ```
+
+    > **Note:** This will also take a while to provision, so time for another coffee.
 
     Along with provisioning the cluster, the terraform script will also download the credentials we need for the following steps for interacting with the cluster. It will also create a Grafana instance and connects it to the Log Analytics workspace as well as Postgres, which acts as the storage backend for Grafana.
 
