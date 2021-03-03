@@ -9,7 +9,7 @@ terraform {
 
 provider "kubernetes" {
   config_path    = "~/.kube/config"
-  config_context = "${var.cluster_name}-admin"
+  config_context = "aks-${var.cluster_name}-admin"
 }
 
 # Configure the Microsoft Azure Provider
@@ -25,28 +25,23 @@ terraform {
 
 resource "kubernetes_namespace" "admin" {
   metadata {
-    labels = {
-      created-by = "terraform"
-    }
+    labels = {created-by = "terraform"}
     name = "admin"
   }
 }
 
 module flux {
-  source = "./flux"
-  resource_group_name = var.resource_group_name
-  cluster_name = var.cluster_name
-  ghuser = var.ghuser
-  admin_repo = var.k8s_manifest_repo
+  source        = "./flux"
+  github_user   = var.github_user
+  github_pat    = var.github_pat
+  admin_repo    = var.k8s_manifest_repo
   workload_repo = var.k8s_workload_repo
-  pat = var.pat
 }
 
 module "servicebus" {
-  source = "./servicebus"
-  resource_group_name = var.resource_group_name
-  cluster_name = var.cluster_name
-  location = var.location
+  source        = "./servicebus"
+  cluster_name  = var.cluster_name
+  location      = var.location
 }
 
 resource "azurerm_key_vault_secret" "sbconnectionstring" {

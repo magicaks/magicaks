@@ -259,6 +259,18 @@ This will set up Flux for admin and non-admin workloads and apply the desired st
 
 1. Verify that the Terraform backend values match your storage account in [./3-postprovision/main.tf](3-postprovision/main.tf).
 1. Fill out the Terraform parameters in [3-postprovision/terraform.tfvars.tmpl](3-postprovision/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
+
+    | Variable | Description | Where do I find this | Example |
+    | -- | -- | -- | -- |
+    | cluster_name | Same cluster_name you used for the previous step | You choose | "magic123" |
+    | location | Same location you provided for the previous step | You choose | "westeurope" |
+    | key_vault_id | Resource ID for the key vault | Same as in previous step | |
+    | app_name | Kubernetes namespace | Unless you have changed this in fabrikate-defs use "app1" | |
+    | github_user | Your github user name | | |
+    | github_pat | Github Public Access Token | Created during the fabrikate-defs setup | |
+    | k8s_manifest_repo | Repository name for your kubernetes manifests repo | | "k8smanifests" |
+    | k8s_workload_repo | Repository name for your kubernetes workloads repo | | "k8sworkloads" |
+
 1. Provision the support resources:
 
     ```bash

@@ -5,45 +5,41 @@ provider "helm" {
 }
 
 provider "github" {
-  token = var.pat
-  organization = var.ghuser
+  token         = var.github_pat
+  organization  = var.github_user
 }
 
 resource "kubernetes_namespace" "flux-admin" {
   metadata {
-    labels = {
-      created-by = "terraform"
-    }
-    name = "flux-admin"
+    labels  = {created-by = "terraform"}
+    name    = "flux-admin"
   }
 }
 
 resource "helm_release" "flux-admin" {
-  name  = "flux-admin"
-  chart = "flux"
-  repository = "https://charts.fluxcd.io/"
-  namespace = kubernetes_namespace.flux-admin.metadata[0].name
-   values = [
-    file("${path.cwd}/flux/values.yaml")
-  ]
+  name        = "flux-admin"
+  chart       = "flux"
+  repository  = "https://charts.fluxcd.io/"
+  namespace   = kubernetes_namespace.flux-admin.metadata[0].name
+  values      = [file("${path.cwd}/flux/values.yaml")]
 
   set {
-    name = "git.url"
-    value = "git@github.com:${var.ghuser}/${var.admin_repo}.git"
+    name  = "git.url"
+    value = "git@github.com:${var.github_user}/${var.admin_repo}.git"
   }
 
   set {
-    name = "git.user"
-    value = var.ghuser
+    name  = "git.user"
+    value = var.github_user
   }
 
   set {
-    name = "git.email"
-    value = "${var.ghuser}@users.noreply.github.com"
+    name  = "git.email"
+    value = "${var.github_user}@users.noreply.github.com"
   }
 
   set {
-    name = "git.path"
+    name  = "git.path"
     value = "dev"
   }
 
@@ -52,10 +48,7 @@ resource "helm_release" "flux-admin" {
 
 data "external" "flux_admin_key" {
   program = ["bash", "${path.cwd}/flux/fluxkey.sh"]
-  query = {
-    namespace = kubernetes_namespace.flux-admin.metadata[0].name
-  }
-
+  query   = {namespace = kubernetes_namespace.flux-admin.metadata[0].name}
   depends_on = [helm_release.flux-admin]
 }
 
@@ -65,59 +58,53 @@ resource "github_repository_deploy_key" "flux-admin" {
   repository = var.admin_repo
   key        = data.external.flux_admin_key.result["key"]
   read_only  = "false"
-
   depends_on = [helm_release.flux-admin]
 }
 
 resource "kubernetes_namespace" "flux-workloads" {
   metadata {
-    labels = {
-      created-by = "terraform"
-    }
-    name = "flux-workloads"
+    labels  = {created-by = "terraform"}
+    name    = "flux-workloads"
   }
 }
 
 resource "helm_release" "flux-workloads" {
-  name  = "flux-workloads"
-  chart = "flux"
-  repository = "https://charts.fluxcd.io/"
-  namespace = kubernetes_namespace.flux-workloads.metadata[0].name
-   values = [
+  name        = "flux-workloads"
+  chart       = "flux"
+  repository  = "https://charts.fluxcd.io/"
+  namespace   = kubernetes_namespace.flux-workloads.metadata[0].name
+  values      = [
     file("${path.cwd}/flux/values.yaml"),
     file("${path.cwd}/flux/values-workloads.yaml")
   ]
 
   set {
-    name = "git.url"
-    value = "git@github.com:${var.ghuser}/${var.workload_repo}.git"
+    name  = "git.url"
+    value = "git@github.com:${var.github_user}/${var.workload_repo}.git"
   }
 
   set {
-    name = "git.user"
-    value = var.ghuser
+    name  = "git.user"
+    value = var.github_user
   }
 
   set {
-    name = "git.email"
-    value = "${var.ghuser}@users.noreply.github.com"
+    name  = "git.email"
+    value = "${var.github_user}@users.noreply.github.com"
   }
 
   set {
-    name = "git.path"
+    name  = "git.path"
     value = "dev"
   }
 
-  depends_on = [kubernetes_namespace.flux-admin,
-                helm_release.flux-admin]
+  depends_on = [kubernetes_namespace.flux-admin, helm_release.flux-admin]
 }
 
 data "external" "flux_workload_key" {
-  program = ["bash", "${path.cwd}/flux/fluxkey.sh"]
-  query = {
-    namespace = kubernetes_namespace.flux-workloads.metadata[0].name
-  }
-  depends_on = [helm_release.flux-workloads]
+  program     = ["bash", "${path.cwd}/flux/fluxkey.sh"]
+  query       = {namespace = kubernetes_namespace.flux-workloads.metadata[0].name}
+  depends_on  = [helm_release.flux-workloads]
 }
 
 # Add a deploy key
@@ -126,6 +113,5 @@ resource "github_repository_deploy_key" "flux-workloads" {
   repository = var.workload_repo
   key        = data.external.flux_workload_key.result["key"]
   read_only  = "false"
-
   depends_on = [helm_release.flux-workloads]
 }
