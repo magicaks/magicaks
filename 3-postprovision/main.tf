@@ -12,6 +12,11 @@ provider "kubernetes" {
   config_context = "${var.cluster_name}-admin"
 }
 
+provider "github" {
+  token = var.pat
+  organization = var.ghuser
+}
+
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
   features {}
@@ -39,7 +44,18 @@ module flux {
   ghuser = var.ghuser
   admin_repo = var.k8s_manifest_repo
   workload_repo = var.k8s_workload_repo
+}
+
+module github {
+  source = "./github"
+  admin_repo = var.k8s_manifest_repo
+  workload_repo = var.k8s_workload_repo
   pat = var.pat
+  ghuser = var.ghuser
+  admin_namespace = module.flux.admin_namespace
+  workload_namespace = module.flux.workload_namespace
+
+  depends_on = [ module.flux ]
 }
 
 module "servicebus" {

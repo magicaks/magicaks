@@ -4,11 +4,6 @@ provider "helm" {
   }
 }
 
-provider "github" {
-  token = var.pat
-  organization = var.ghuser
-}
-
 resource "kubernetes_namespace" "flux-admin" {
   metadata {
     labels = {
@@ -47,27 +42,18 @@ resource "helm_release" "flux-admin" {
     name = "git.path"
     value = "dev"
   }
-
-  depends_on = [kubernetes_namespace.flux-admin]
-}
-
-data "external" "flux_admin_key" {
-  program = ["bash", "${path.cwd}/fluxfiles/fluxkey.sh"]
-  query = {
-    namespace = kubernetes_namespace.flux-admin.metadata[0].name
+  
+  set {
+    name = "git.pollInterval"
+    value = "2m"
   }
 
-  depends_on = [helm_release.flux-admin]
-}
+  set {
+    name = "sync.timeout"
+    value = "2m"
+  }
 
-# Add a deploy key
-resource "github_repository_deploy_key" "flux-admin" {
-  title      = "flux-admin-${formatdate("D-M-YY", timestamp())}"
-  repository = var.admin_repo
-  key        = data.external.flux_admin_key.result["key"]
-  read_only  = "false"
-
-  depends_on = [helm_release.flux-admin]
+  depends_on = [kubernetes_namespace.flux-admin]
 }
 
 resource "kubernetes_namespace" "flux-workloads" {
@@ -110,24 +96,16 @@ resource "helm_release" "flux-workloads" {
     value = "dev"
   }
 
+  set {
+    name = "git.pollInterval"
+    value = "2m"
+  }
+
+  set {
+    name = "sync.timeout"
+    value = "2m"
+  }
+
   depends_on = [kubernetes_namespace.flux-admin, 
                 helm_release.flux-admin]
-}
-
-data "external" "flux_workload_key" {
-  program = ["bash", "${path.cwd}/fluxfiles/fluxkey.sh"]
-  query = {
-    namespace = kubernetes_namespace.flux-workloads.metadata[0].name
-  }
-  depends_on = [helm_release.flux-workloads]
-}
-
-# Add a deploy key
-resource "github_repository_deploy_key" "flux-workloads" {
-  title      = "flux-workloads-${formatdate("D-M-YY", timestamp())}"
-  repository = var.workload_repo
-  key        = data.external.flux_workload_key.result["key"]
-  read_only  = "false"
-
-  depends_on = [helm_release.flux-workloads]
 }
