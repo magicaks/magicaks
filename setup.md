@@ -217,7 +217,7 @@ After provisioning the resources take note of the terraform output variables, yo
 
     > **Note:** MagicAKS is not creating a system assigned managed identity, due to current [limitations](https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#create-an-aks-cluster-with-managed-identities) of self-managed VNet and static IP address outside the MC_ resource group.
 
-    You will need to provide the `Managed Identity Resource ID` as a variable to Terraform when creating the cluster.
+    You will need to provide the **managed identity resource ID** (provided as output of the script) as a variable to Terraform when creating the cluster.
 
 3. Fill out the Terraform parameters in [2-provision-aks/terraform.tfvars.tmpl](2-provision-aks/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
 
