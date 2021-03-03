@@ -6,20 +6,23 @@ resource "azurerm_virtual_network" "vnet" {
 }
 
 resource "azurerm_subnet" "k8s_subnet" {
-  name                 = "snet-k8s"
-  resource_group_name  = var.resource_group_name
-  address_prefixes       = ["10.1.2.0/24"]
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  service_endpoints = ["Microsoft.KeyVault", "Microsoft.ServiceBus",
-                       "Microsoft.Sql", "Microsoft.ContainerRegistry",
-                       "Microsoft.Storage"]
+  name                  = "snet-k8s"
+  resource_group_name   = var.resource_group_name
+  address_prefixes      = ["10.1.2.0/24"]
+  virtual_network_name  = azurerm_virtual_network.vnet.name
+  service_endpoints     = [
+    "Microsoft.KeyVault",
+    "Microsoft.ServiceBus",
+    "Microsoft.Sql",
+    "Microsoft.ContainerRegistry",
+    "Microsoft.Storage"]
 }
 
 resource "azurerm_subnet" "aci_subnet" {
   name                 = "snet-aci"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes       = ["10.1.3.0/24"]
+  address_prefixes     = ["10.1.3.0/24"]
 
   delegation {
     name = "delegation"
@@ -29,7 +32,7 @@ resource "azurerm_subnet" "aci_subnet" {
       actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }
-  service_endpoints = [ "Microsoft.Sql", "Microsoft.ContainerRegistry"]
+  service_endpoints = ["Microsoft.Sql", "Microsoft.ContainerRegistry"]
 
 }
 
@@ -37,7 +40,7 @@ resource "azurerm_subnet" "adhoc_subnet" {
   name                 = "snet-adhoc"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes       = ["10.1.4.0/24"]
+  address_prefixes     = ["10.1.4.0/24"]
 }
 
 resource "azurerm_network_profile" "aci_profile" {
@@ -68,10 +71,10 @@ resource "azurerm_route_table" "subnet_route_table" {
   }
 
   route {
-      name = "fw"
-      address_prefix = "0.0.0.0/0"
-      next_hop_type  = "VirtualAppliance"
-      next_hop_in_ip_address = azurerm_firewall.magicaks_firewall.ip_configuration[0].private_ip_address
+    name                    = "fw"
+    address_prefix          = "0.0.0.0/0"
+    next_hop_type           = "VirtualAppliance"
+    next_hop_in_ip_address  = azurerm_firewall.magicaks_firewall.ip_configuration[0].private_ip_address
   }
 }
 
@@ -84,7 +87,7 @@ resource "azurerm_subnet" "fw_subnet" {
   name                 = "AzureFirewallSubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes       = ["10.1.1.0/24"]
+  address_prefixes     = ["10.1.1.0/24"]
 }
 
 resource "azurerm_public_ip" "fw_ip" {
@@ -116,48 +119,18 @@ resource "azurerm_firewall_network_rule_collection" "magicaks_rules" {
 
   rule {
     name = "TCP Rules"
-
-    source_addresses = [
-      "*",
-    ]
-
-    destination_ports = [
-      "9000",
-      "443",
-      "445",
-      "22",
-      "80"
-    ]
-
-    destination_addresses = [
-      "*",
-    ]
-
-    protocols = [
-      "TCP",
-    ]
+    source_addresses = ["*"]
+    destination_ports = ["9000", "443", "445", "22", "80"]
+    destination_addresses = ["*"]
+    protocols = ["TCP"]
   }
 
   rule {
     name = "UDP Rules"
-
-    source_addresses = [
-      "*",
-    ]
-
-    destination_ports = [
-      "1194",
-      "123",
-      "53"
-    ]
-
-    destination_addresses = [
-      "*",
-    ]
-
-    protocols = [
-      "UDP"
-    ]
+    source_addresses = ["*"]
+    destination_ports = ["1194", "123","53"]
+    destination_addresses = ["*"]
+    protocols = ["UDP"]
   }
 }
 
@@ -169,13 +142,9 @@ resource "azurerm_firewall_application_rule_collection" "aks_global_required" {
   action              = "Allow"
 
   rule {
-    name = "required"
-
-    source_addresses = [
-      "*",
-    ]
-
-    fqdn_tags = [ "AzureKubernetesService" ]
+    name              = "required"
+    source_addresses  = ["*"]
+    fqdn_tags         = [ "AzureKubernetesService"]
   }
 }
 
@@ -187,25 +156,21 @@ resource "azurerm_firewall_application_rule_collection" "aks_for_public_containe
   action              = "Allow"
 
   rule {
-    name = "registries"
-
-    source_addresses = [
-      "*",
-    ]
-
-    target_fqdns = [
-        "*auth.docker.io",
-        "*cloudflare.docker.io",
-        "*cloudflare.docker.com",
-        "*registry-1.docker.io",
-        "apt.dockerproject.org",
-        "gcr.io",
-        "storage.googleapis.com",
-        "*.quay.io",
-        "quay.io",
-        "*.cloudfront.net",
-        "*.azurecr.io",
-        "*.gk.azmk8s.io"
+    name              = "registries"
+    source_addresses  = ["*"]
+    target_fqdns      = [
+      "*auth.docker.io",
+      "*cloudflare.docker.io",
+      "*cloudflare.docker.com",
+      "*registry-1.docker.io",
+      "apt.dockerproject.org",
+      "gcr.io",
+      "storage.googleapis.com",
+      "*.quay.io",
+      "quay.io",
+      "*.cloudfront.net",
+      "*.azurecr.io",
+      "*.gk.azmk8s.io"
     ]
 
     protocol {
@@ -223,15 +188,9 @@ resource "azurerm_firewall_application_rule_collection" "flux" {
   action              = "Allow"
 
   rule {
-    name = "flux"
-
-    source_addresses = [
-      "*",
-    ]
-
-    target_fqdns = [
-        "*.github.com"
-    ]
+    name              = "flux"
+    source_addresses  = ["*"]
+    target_fqdns      = ["*.github.com"]
 
     protocol {
       port = "443"
@@ -249,14 +208,8 @@ resource "azurerm_firewall_application_rule_collection" "key_vault_rule_collecti
 
   rule {
     name = "kv"
-
-    source_addresses = [
-      "*",
-    ]
-
-    target_fqdns = [
-        "*.vault.azure.net"
-    ]
+    source_addresses = ["*"]
+    target_fqdns = ["*.vault.azure.net"]
 
     protocol {
       port = "443"
@@ -274,16 +227,12 @@ resource "azurerm_firewall_application_rule_collection" "azure_policy_rule_colle
 
   rule {
     name = "azurepolicy"
-
-    source_addresses = [
-      "*",
-    ]
-
+    source_addresses = ["*"]
     target_fqdns = [
-        "gov-prod-policy-data.trafficmanager.net",
-        "raw.githubusercontent.com",
-        "*.gk.azmk8s.io",
-        "dc.services.visualstudio.com"
+      "gov-prod-policy-data.trafficmanager.net",
+      "raw.githubusercontent.com",
+      "*.gk.azmk8s.io",
+      "dc.services.visualstudio.com"
     ]
 
     protocol {

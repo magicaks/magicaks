@@ -24,27 +24,27 @@ resource "azurerm_resource_group" "shared_rg" {
 }
 
 module "networking" {
-  source = "./networking"
-  location = var.location
+  source              = "./networking"
+  location            = var.location
   resource_group_name = azurerm_resource_group.shared_rg.name
-  resource_suffix = var.resource_suffix
+  resource_suffix     = var.resource_suffix
 }
 
 module "acr" {
-  source = "./acr"
-  location = var.location
+  source              = "./acr"
+  location            = var.location
   resource_group_name = azurerm_resource_group.shared_rg.name
-  subnet_id = module.networking.k8s_subnet_id
-  resource_suffix = var.resource_suffix
+  subnet_id           = module.networking.k8s_subnet_id
+  resource_suffix     = var.resource_suffix
 }
 
 module "kv" {
-  source = "./kv"
-  location = var.location
+  source              = "./kv"
+  location            = var.location
   resource_group_name = azurerm_resource_group.shared_rg.name
-  k8s_subnet_id = module.networking.k8s_subnet_id
-  resource_suffix = var.resource_suffix
-  tenant_id = var.tenant_id
+  k8s_subnet_id       = module.networking.k8s_subnet_id
+  resource_suffix     = var.resource_suffix
+  tenant_id           = var.tenant_id
 }
 
 resource "azurerm_key_vault_secret" "registry_username" {
