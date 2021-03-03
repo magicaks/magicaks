@@ -209,7 +209,7 @@ After provisioning the resources take note of the terraform output variables, yo
 
 2. Create a managed identity for the cluster
 
-    MagicAKS creates a managed identity cluster. We create the identity for this cluster in the resource group with other shared resources, so the permissions remain even if we recreate the cluster. To create an identity run the `create-sluster-managed-identity.sh` script, providing the **resource_group_name** you entered in the terraform variables:
+    MagicAKS creates a managed identity cluster. We create the identity for this cluster in the resource group with other shared resources, so the permissions remain even if we recreate the cluster. To create an identity run the [create-cluster-managed-identity.sh](utils/scripts/create-cluster-managed-identity.sh) script, providing the **resource_group_name** you entered in the terraform variables:
 
     ```bash
     ./utils/scripts/create-cluster-managed-identity.sh rg-magicaks-shared
