@@ -4,4 +4,3 @@ variable pat {}
 variable ghuser {}
 variable admin_namespace {}
 variable workload_namespace {}
-
