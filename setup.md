@@ -16,9 +16,8 @@ You need to install:
   To install fluxctl on WSL run
 
     ```bash
-    sudo curl -L https://github.com/fluxcd/flux/releases/download/1.21.1/fluxctl_linux_amd64 -o
-    /usr/local/bin/fluxctl
-    chmod a+x /usr/local/bin/fluxctl
+    sudo curl -L https://github.com/fluxcd/flux/releases/download/1.21.1/fluxctl_linux_amd64 -o /usr/local/bin/fluxctl
+    sudo chmod a+x /usr/local/bin/fluxctl
     ```
 
     > Note the version number in the URL above.
