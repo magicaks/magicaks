@@ -24,10 +24,9 @@ resource "helm_release" "flux-admin" {
   repository = "https://charts.fluxcd.io/"
   namespace = kubernetes_namespace.flux-admin.metadata[0].name
    values = [
-    file("${path.cwd}/fluxfiles/values.yaml")
+    file("${path.cwd}/flux/values.yaml")
   ]
 
-  
   set {
     name = "git.url"
     value = "git@github.com:${var.ghuser}/${var.admin_repo}.git"
@@ -52,7 +51,7 @@ resource "helm_release" "flux-admin" {
 }
 
 data "external" "flux_admin_key" {
-  program = ["bash", "${path.cwd}/fluxfiles/fluxkey.sh"]
+  program = ["bash", "${path.cwd}/flux/fluxkey.sh"]
   query = {
     namespace = kubernetes_namespace.flux-admin.metadata[0].name
   }
@@ -85,11 +84,10 @@ resource "helm_release" "flux-workloads" {
   repository = "https://charts.fluxcd.io/"
   namespace = kubernetes_namespace.flux-workloads.metadata[0].name
    values = [
-    file("${path.cwd}/fluxfiles/values.yaml"),
-    file("${path.cwd}/fluxfiles/values-workloads.yaml")
+    file("${path.cwd}/flux/values.yaml"),
+    file("${path.cwd}/flux/values-workloads.yaml")
   ]
 
-  
   set {
     name = "git.url"
     value = "git@github.com:${var.ghuser}/${var.workload_repo}.git"
@@ -110,12 +108,12 @@ resource "helm_release" "flux-workloads" {
     value = "dev"
   }
 
-  depends_on = [kubernetes_namespace.flux-admin, 
+  depends_on = [kubernetes_namespace.flux-admin,
                 helm_release.flux-admin]
 }
 
 data "external" "flux_workload_key" {
-  program = ["bash", "${path.cwd}/fluxfiles/fluxkey.sh"]
+  program = ["bash", "${path.cwd}/flux/fluxkey.sh"]
   query = {
     namespace = kubernetes_namespace.flux-workloads.metadata[0].name
   }

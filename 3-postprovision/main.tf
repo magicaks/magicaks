@@ -33,7 +33,7 @@ resource "kubernetes_namespace" "admin" {
 }
 
 module flux {
-  source = "./fluxfiles"
+  source = "./flux"
   resource_group_name = var.resource_group_name
   cluster_name = var.cluster_name
   ghuser = var.ghuser
