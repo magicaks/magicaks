@@ -16,9 +16,8 @@ You need to install:
   To install fluxctl on WSL run
 
     ```bash
-    sudo curl -L https://github.com/fluxcd/flux/releases/download/1.21.1/fluxctl_linux_amd64 -o
-    /usr/local/bin/fluxctl
-    chmod a+x /usr/local/bin/fluxctl
+    sudo curl -L https://github.com/fluxcd/flux/releases/download/1.21.1/fluxctl_linux_amd64 -o /usr/local/bin/fluxctl
+    sudo chmod a+x /usr/local/bin/fluxctl
     ```
 
     > Note the version number in the URL above.
@@ -265,8 +264,19 @@ After we provision the cluster, we need to provision all support resources.
 
 This will set up Flux for admin and non-admin workloads and apply the desired state of the configs to your cluster. During this step we will also create the service bus and other supporting resources.
 
-1. Verify that the Terraform backend values match your storage account in [./3-postprovision/main.tf](3-postprovision/main.tf).
 1. Fill out the Terraform parameters in [3-postprovision/terraform.tfvars.tmpl](3-postprovision/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
+
+    | Variable | Description | Example |
+    | -- | -- | -- | -- |
+    | cluster_name | Same cluster_name as in 2-provision-aks | "magic123" |
+    | location | Same location as in 2-provision-aks | "westeurope" |
+    | key_vault_id | Same key_vault_id as in 2-provision-aks | |
+    | app_name | The kubernetes app namespace, this will be "app1" unless you changed it in the fabrikate-defs setup steps | "app1" |
+    | github_user | Your github user name | |
+    | github_pat | The github personal access token created in the fabrikate-defs setup steps | |
+    | k8s_manifest_repo | your kubernetes manifest repository | "k8smanifests" |
+    | k8s_workload_repo | your kubernetes workload repository | "k8sworkloads" |
+
 1. Provision the support resources:
 
     ```bash
