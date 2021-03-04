@@ -239,7 +239,7 @@ After provisioning the resources take note of the Terraform output variables, yo
     | cluster_support_db_admin_password | Password for the cluster support Postgres DB | Provide a strong password | |
     | aci_subnet_id | Azure Container Instance subnet ID | From the previous Terraform step | |
     | k8s_subnet_id | Kubernetes subnet ID | From the previous Terraform step | |
-    | admin_group_object_ids | Admin group object ID | From the "Create AKS cluster admins AAD group" step | |
+    | admin_group_object_ids | Admin group object ID | From the "[Create AKS cluster admins AAD group](#2.-create-an-aks-cluster-admins-aad-group)" step | |
     | user_assigned_identity_resource_id | Managed Identity Resource ID | From `create-cluster-managed-identity.sh` | |
     | grafana_admin_password | Grafana Admin Password | Provide a strong password | |
     | aci_network_profile_id | Azure Container Instance Profile ID | From the previous Terraform step | |
