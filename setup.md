@@ -232,18 +232,18 @@ After provisioning the resources take note of the Terraform output variables, yo
     | -- | -- | -- | -- |
     | cluster_name | A unique string used to for resources that need globally unique names. Keep this short and without dashes to fulfill [Azure naming requirements](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules) | You choose | "magic123" |
     | location | The location where to create the resources | You choose | "westeurope" |
-    | subscription_id | Your Azure Subscription ID | | |
-    | tenant_id | The Azure Tenant ID for the tenant where the resources should be created. | [How to find](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant) | | |
-    | aad_tenant_id | The Azure Active Directory Tenant ID | | |
-    | key_vault_id | Resource ID for the key vault | From the previous Terraform step | |
+    | subscription_id | Your Azure subscription ID | | |
+    | tenant_id | The Azure tenant ID for the tenant where the resources should be created | [How to find](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant) | | |
+    | aad_tenant_id | Azure Active Directory tenant ID | | |
+    | key_vault_id | Resource ID of Key Vault | From the previous Terraform step | |
     | cluster_support_db_admin_password | Password for the cluster support Postgres DB | Provide a strong password | |
-    | aci_subnet_id | Azure Container Instance subnet ID | From the previous Terraform step | |
+    | aci_subnet_id | Azure Container Instances subnet ID | From the previous Terraform step | |
     | k8s_subnet_id | Kubernetes subnet ID | From the previous Terraform step | |
     | admin_group_object_ids | Admin group object ID | From the "[Create AKS cluster admins AAD group](#2.-create-an-aks-cluster-admins-aad-group)" step | |
-    | user_assigned_identity_resource_id | Managed Identity Resource ID | From `create-cluster-managed-identity.sh` | |
-    | grafana_admin_password | Grafana Admin Password | Provide a strong password | |
-    | aci_network_profile_id | Azure Container Instance Profile ID | From the previous Terraform step | |
-    | acr_name | Azure Container Registry where the grafana image can be found | From the previous Terraform step | |
+    | user_assigned_identity_resource_id | Managed identity resource ID | From `create-cluster-managed-identity.sh` | |
+    | grafana_admin_password | Grafana admin password | Provide a strong password | |
+    | aci_network_profile_id | Azure Container Instances profile ID | From the previous Terraform step | |
+    | acr_name | Azure Container Registry where the Grafana image can be found | From the previous Terraform step | |
     | monitoring_reader_sp_client_id | Grafana service principal ID | From the "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step | |
     | monitoring_reader_sp_client_secret | Grafana service principal password | From the "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step | |
 
