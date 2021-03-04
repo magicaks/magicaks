@@ -156,9 +156,9 @@ Terraform stores state configuration in Azure Storage.
     | -- | -- | -- |
     | ARM_SUBSCRIPTION_ID | The Azure subscription ID for the subscription where you want to provision the resources | In the Azure Portal |
     | ARM_TENANT_ID | The Azure Tenant ID for the tenant where you want to provision the resources | In the Azure Portal |
-    | ARM_CLIENT_ID | The **magicaks-terraform** service principal ID | Saved in step 5.1 |
-    | ARM_CLIENT_SECRET | The **magicaks-terraform** service principal password | Saved in step 5.1 |
-    | ARM_ACCESS_KEY | Terraform state storage access key | See step 6 |
+    | ARM_CLIENT_ID | The **magicaks-terraform** service principal ID | Saved in "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step |
+    | ARM_CLIENT_SECRET | The **magicaks-terraform** service principal password | Saved in "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step |
+    | ARM_ACCESS_KEY | Terraform state storage access key | See step 5 |
     | TF_CLI_ARGS_init | Terraform remote storage configuration file location | [backend.tfvars](./backend.tfvars) |
 
 1. Set the environment variables
@@ -244,8 +244,8 @@ After provisioning the resources take note of the terraform output variables, yo
     | grafana_admin_password | Grafana Admin Password | Provide a strong password | |
     | aci_network_profile_id | Azure Container Instance Profile ID | From the previous terraform step | |
     | acr_name | Azure Container Registry where the grafana image can be found | From the previous terraform step | |
-    | monitoring_reader_sp_client_id | Grafana Service Principal ID | From the "Create **magicaks-grafana**" step | |
-    | monitoring_reader_sp_client_secret | Grafana Service Principal Password | From the "Create **magicaks-grafana**" step | |
+    | monitoring_reader_sp_client_id | Grafana service principal ID | From the "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step | |
+    | monitoring_reader_sp_client_secret | Grafana service principal password | From the "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step | |
 
 4. Provision the cluster:
 
