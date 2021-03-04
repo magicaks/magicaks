@@ -86,25 +86,32 @@ Follow the steps in your copy of the [Fabrikate definitions repository README](h
 
 ### 4. Create service principals for provisioning resources
 
-1. Create a service principal (**magicaks-terraform**) that terraform can use for deploying resources. **Write down the id and password for later.**
+We need to create two service principals:
 
-    > **Note:** Replace `SUBSCRIPTION_ID` with your own Azure subscription ID.
+* `magicaks-terraform`: Terraform will use this for deploying resources and assign Azure policy for the cluster
+* `magicaks-grafana`: Grafana will use this to talk to the Log Analytics backend (restricted to "Monitoring Reader" role)
 
-    > **Note:** The tenant of active directory used below should be the one in which the subscription **SUBSCRIPTION_ID** exists. If your active directory where RBAC is managed is different from where subscription is present you need to log into the correct tenant using ``az login --tenant tenant_id`` before running the following commands.
+1. Get the subscription ID of your Azure account
 
-    ```bash
-    az ad sp create-for-rbac --role="Contributor" --name "http://magicaks-terraform" --scopes="/subscriptions/SUBSCRIPTION_ID"
-    eval OBJECT_ID=$(az ad sp show --id app_id_from_above --query objectId)
-    az role assignment create --assignee-object-id $OBJECT_ID --role "Resource Policy Contributor" # Needed to assign Azure Policy to cluster.
-    ```
+    > **Note:** Use the subscription ID associated with the tenant of active directory used. If your active directory where RBAC is managed is different from where subscription is present you need to log into the correct tenant using ``az login --tenant <tenand ID>`` before running the following commands.
 
-1. Create a service principal (**magicaks-grafana**) that Grafana can use for talking to Log Analytics backend. We restrict this service principal to **Monitoring Reader** role. **Write down the id and password for later**
+1. Run the script to create required service principals and **collect the app IDs and passwords from the output**:
 
     ```bash
-    az ad sp create-for-rbac --role "Monitoring Reader" --name "http://magicaks-grafana"
+    ./utils/scripts/create-service-principals.sh <Azure subscription ID>
     ```
 
-    > **Note:** You may get "Found an existing application instance of "GUID". We will patch it". This means that a service principal with the same already exists in the tenant. Change the name of the service principal and try again.
+    * **Or** if you prefer to run the steps manually:
+
+        ```bash
+        az ad sp create-for-rbac --role "Contributor" --name "http://magicaks-terraform" --scopes="/subscriptions/<SUBSCRIPTION ID>"
+        eval OBJECT_ID=$(az ad sp show --id <APP ID FROM OUTPUT ABOVE> --query objectId)
+        az role assignment create --assignee-object-id $OBJECT_ID --role "Resource Policy Contributor"
+
+        az ad sp create-for-rbac --role "Monitoring Reader" --name "http://magicaks-grafana"
+        ```
+
+> **Note:** You may get "Found an existing application instance of "GUID". We will patch it". This means that a service principal with the same already exists in the tenant. Delete the existing service principal or change the name of the service principal and try again.
 
 ### 5. Configure Terraform state
 
@@ -139,7 +146,7 @@ Terraform stores state configuration in Azure Storage.
     export ARM_TENANT_ID=
     export ARM_CLIENT_ID=
     export ARM_CLIENT_SECRET=
-    # Storage access key where the terraform state information is to be stored.
+    # Storage access key where the Terraform state information is to be stored.
     export ARM_ACCESS_KEY=
     # Applies the Terraform remote backend configuration and 'Terraform init' commands
     export TF_CLI_ARGS_init='-backend-config=../backend.tfvars'
@@ -149,9 +156,9 @@ Terraform stores state configuration in Azure Storage.
     | -- | -- | -- |
     | ARM_SUBSCRIPTION_ID | The Azure subscription ID for the subscription where you want to provision the resources | In the Azure Portal |
     | ARM_TENANT_ID | The Azure Tenant ID for the tenant where you want to provision the resources | In the Azure Portal |
-    | ARM_CLIENT_ID | The **magicaks-terraform** service principal ID | Saved in step 5.1 |
-    | ARM_CLIENT_SECRET | The **magicaks-terraform** service principal password | Saved in step 5.1 |
-    | ARM_ACCESS_KEY | Terraform state storage access key | See step 6 |
+    | ARM_CLIENT_ID | The **magicaks-terraform** service principal ID | Saved in "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step |
+    | ARM_CLIENT_SECRET | The **magicaks-terraform** service principal password | Saved in "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step |
+    | ARM_ACCESS_KEY | Terraform state storage access key | See step 5 |
     | TF_CLI_ARGS_init | Terraform remote storage configuration file location | [backend.tfvars](./backend.tfvars) |
 
 1. Set the environment variables
@@ -160,7 +167,7 @@ Terraform stores state configuration in Azure Storage.
    source .env
    ```
 
-## Prepare to provision resources with terraform
+## Prepare to provision resources with Terraform
 
 > **Note:** Terraform requires variables as input. You can provide these either interactively or if there is a `terraform.tfvars` file present then Terraform will detect it and use the variables there. Each of the folders ([1-preprovision](1-preprovision/terraform.tfvars.tmpl), [2-provision-aks](2-provision-aks/terraform.tfvars.tmpl), [3-postprovision](3-postprovision/terraform.tfvars.tmpl) have a `terraform.tfvars.tmpl` file. If you want to use `terraform.tfvars` support, you can rename/copy `terraform.tfvars.tmpl` to `terraform.tfvars` and fill in the values.
 
@@ -194,7 +201,7 @@ Before we provision the AKS clusters, we will provision some common resources th
 
 > **Note:** It's normal for this to take a long time to provision, especially the Firewall, so relax and grab a coffee.
 
-After provisioning the resources take note of the terraform output variables, you will be using them in upcoming steps.
+After provisioning the resources take note of the Terraform output variables, you will be using them in upcoming steps.
 
 ## Provision an AKS cluster
 
@@ -209,7 +216,7 @@ After provisioning the resources take note of the terraform output variables, yo
 
 2. Create a managed identity for the cluster
 
-    MagicAKS creates a managed identity cluster. We create the identity for this cluster in the resource group with other shared resources, so the permissions remain even if we recreate the cluster. To create an identity run the [create-cluster-managed-identity.sh](utils/scripts/create-cluster-managed-identity.sh) script, providing the **resource_group_name** you entered in the terraform variables:
+    MagicAKS creates a managed identity cluster. We create the identity for this cluster in the resource group with other shared resources, so the permissions remain even if we recreate the cluster. To create an identity run the [create-cluster-managed-identity.sh](utils/scripts/create-cluster-managed-identity.sh) script, providing the **resource_group_name** you entered in the Terraform variables:
 
     ```bash
     ./utils/scripts/create-cluster-managed-identity.sh rg-magicaks-shared
@@ -225,20 +232,20 @@ After provisioning the resources take note of the terraform output variables, yo
     | -- | -- | -- | -- |
     | cluster_name | A unique string used to for resources that need globally unique names. Keep this short and without dashes to fulfill [Azure naming requirements](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules) | You choose | "magic123" |
     | location | The location where to create the resources | You choose | "westeurope" |
-    | subscription_id | Your Azure Subscription ID | | |
-    | tenant_id | The Azure Tenant ID for the tenant where the resources should be created. | [How to find](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant) | | |
-    | aad_tenant_id | The Azure Active Directory Tenant ID | | |
-    | key_vault_id | Resource ID for the key vault | From the previous terraform step | |
+    | subscription_id | Your Azure subscription ID | | |
+    | tenant_id | The Azure tenant ID for the tenant where the resources should be created | [How to find](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant) | | |
+    | aad_tenant_id | Azure Active Directory tenant ID | | |
+    | key_vault_id | Resource ID of Key Vault | From the previous Terraform step | |
     | cluster_support_db_admin_password | Password for the cluster support Postgres DB | Provide a strong password | |
-    | aci_subnet_id | Azure Container Instance subnet ID | From the previous terraform step | |
-    | k8s_subnet_id | Kubernetes subnet ID | From the previous terraform step | |
-    | admin_group_object_ids | Admin group object ID | From the "Create AKS cluster admins AAD group" step | |
-    | user_assigned_identity_resource_id | Managed Identity Resource ID | From `create-cluster-managed-identity.sh` | |
-    | grafana_admin_password | Grafana Admin Password | Provide a strong password | |
-    | aci_network_profile_id | Azure Container Instance Profile ID | From the previous terraform step | |
-    | acr_name | Azure Container Registry where the grafana image can be found | From the previous terraform step | |
-    | monitoring_reader_sp_client_id | Grafana Service Principal ID | From the "Create **magicaks-grafana**" step | |
-    | monitoring_reader_sp_client_secret | Grafana Service Principal Password | From the "Create **magicaks-grafana**" step | |
+    | aci_subnet_id | Azure Container Instances subnet ID | From the previous Terraform step | |
+    | k8s_subnet_id | Kubernetes subnet ID | From the previous Terraform step | |
+    | admin_group_object_ids | Admin group object ID | From the "[Create AKS cluster admins AAD group](#2.-create-an-aks-cluster-admins-aad-group)" step | |
+    | user_assigned_identity_resource_id | Managed identity resource ID | From `create-cluster-managed-identity.sh` | |
+    | grafana_admin_password | Grafana admin password | Provide a strong password | |
+    | aci_network_profile_id | Azure Container Instances profile ID | From the previous Terraform step | |
+    | acr_name | Azure Container Registry where the Grafana image can be found | From the previous Terraform step | |
+    | monitoring_reader_sp_client_id | Grafana service principal ID | From the "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step | |
+    | monitoring_reader_sp_client_secret | Grafana service principal password | From the "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step | |
 
 4. Provision the cluster:
 
@@ -250,7 +257,7 @@ After provisioning the resources take note of the terraform output variables, yo
 
     > **Note:** This will also take a while to provision, so time for another coffee.
 
-    Along with provisioning the cluster, the terraform script will also download the credentials we need for the following steps for interacting with the cluster. It will also create a Grafana instance and connects it to the Log Analytics workspace as well as Postgres, which acts as the storage backend for Grafana.
+    Along with provisioning the cluster, the Terraform script will also download the credentials we need for the following steps for interacting with the cluster. It will also create a Grafana instance and connects it to the Log Analytics workspace as well as Postgres, which acts as the storage backend for Grafana.
 
 ## Provision support resources
 
