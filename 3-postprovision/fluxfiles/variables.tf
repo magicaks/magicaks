@@ -11,8 +11,6 @@ variable ghuser {}
 variable admin_repo {}
 variable workload_repo {}
 
-variable pat {}
-
 variable flux_recreate {
     default = false
 }
