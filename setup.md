@@ -307,6 +307,23 @@ Congratulations, you have provisioned your AKS cluster with the following resour
 * Azure Firewall integrated with network and application rules as recommended by AKS
 * Grafana connected to Log Analytics workspace of the cluster is running in Azure Container Instances backed by managed PostgreSQL database
 
+## Resource cleanup
+
+To remove all the resources you can either run the ```terraform destroy``` commands in reverse order, or you can navigate to the ./utils/scripts/ directory and run ```./destroy.sh```. The script will:
+
+* run terraform destroy with auto approve from three folders (3-postprovision, 2-provision-aks, 1-preprovision)
+* delete the MagicAKS service identity
+* delete MagicAKS service principal
+
+Sometimes timeing issues may cause the terraform destroy not to complete in time, or fail. Re-running the destroy script will in most cases result in deletion of the resources.
+
+Notice that the destroy script relies on existing resources from which the environment was provisioned (for example .env file, kube.config, etc.). If you are trying to run the terraform destoy from a blank environment, or you don't have access to the original values, you might need to manualy delete the resources. In that case you should:
+
+* remove resource groups provisioned by terraform
+* remove service principals and groups provisioned by scripts
+* remove any resources that were provisioned manualy (e.g. RBAC groups)
+* remove/cleanup the unused files from terraform state in blob storage (or delete the terraform blob storage if you are not otherwise using the same blob storage for terraform state files for other resources)
+
 ## Troubleshooting
 
 * Terraform authentication error.
