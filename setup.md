@@ -321,7 +321,7 @@ Notice that the destroy script relies on existing resources from which the envir
 
 * remove resource groups provisioned by terraform
 * remove service principals and groups provisioned by scripts
-* remove any resources that were provisioned manualy (e.g. RBAC groups)
+* remove any resources that were provisioned manually (e.g. RBAC groups)
 * remove/cleanup the unused files from terraform state in blob storage (or delete the terraform blob storage if you are not otherwise using the same blob storage for terraform state files for other resources)
 
 ## Troubleshooting
