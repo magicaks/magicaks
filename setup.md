@@ -315,7 +315,7 @@ To remove all the resources you can either run the ```terraform destroy``` comma
 * delete the MagicAKS service identity
 * delete MagicAKS service principal
 
-Sometimes timeing issues may cause the terraform destroy not to complete in time, or fail. Re-running the destroy script will in most cases result in deletion of the resources.
+Sometimes timing issues may cause the terraform destroy not to complete in time, or fail. Re-running the destroy script will in most cases result in deletion of the resources.
 
 Notice that the destroy script relies on existing resources from which the environment was provisioned (for example .env file, kube.config, etc.). If you are trying to run the terraform destoy from a blank environment, or you don't have access to the original values, you might need to manualy delete the resources. In that case you should:
 
