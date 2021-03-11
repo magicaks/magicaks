@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "=2.46.0"
     }
+    github = {
+      source = "hashicorp/github"
+      version = "=4.5.0"
+    }
   }
 }
 
@@ -42,12 +46,30 @@ module flux {
   workload_repo       = var.k8s_workload_repo
 }
 
+# Upload keys only after a suitable delay
+resource "time_sleep" "flux_admin" {
+  create_duration = "60s"
+
+  triggers = {
+    admin_namespace  = module.flux.admin_namespace
+  }
+}
+
+# Upload keys only after a suitable delay
+resource "time_sleep" "flux_workloads" {
+  create_duration = "60s"
+
+  triggers = {
+    workload_namespace  = module.flux.workload_namespace
+  }
+}
+
 module github {
   source              = "./github"
   admin_repo          = var.k8s_manifest_repo
   workload_repo       = var.k8s_workload_repo
-  admin_namespace     = module.flux.admin_namespace
-  workload_namespace  = module.flux.workload_namespace
+  admin_namespace     = time_sleep.flux_admin.triggers["admin_namespace"]
+  workload_namespace  = time_sleep.flux_workloads.triggers["workload_namespace"]
   depends_on          = [ module.flux ]
 }
 

@@ -14,6 +14,7 @@ then
 fi
 
 az identity create --name magicaksmsi --resource-group $SHARED_RESOURCE_GROUP
+sleep 60
 eval MSI_CLIENT_ID=$(az identity show -n magicaksmsi -g $SHARED_RESOURCE_GROUP -o json | jq -r ".clientId")
 eval MSI_RESOURCE_ID=$(az identity show -n magicaksmsi -g $SHARED_RESOURCE_GROUP -o json | jq -r ".id")
 az role assignment create --role "Network Contributor" --assignee $MSI_CLIENT_ID -g $SHARED_RESOURCE_GROUP

@@ -1,0 +1,3 @@
+output "fake" {
+  value = "fake"
+}

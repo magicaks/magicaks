@@ -1,48 +1,32 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "=2.46.0"
-    }
-  }
-}
-
-# Configure the Microsoft Azure Provider
-provider "azurerm" {
-  features {}
-}
-
-terraform {
-  backend "azurerm" {
-    key = "magicaks-preprovision"
-  }
-}
-
-resource "azurerm_resource_group" "shared_rg" {
-  name     = var.resource_group_name
-  location = var.location
-}
-
 module "networking" {
   source              = "./networking"
   location            = var.location
-  resource_group_name = azurerm_resource_group.shared_rg.name
+  resource_group_name = var.resource_group_name
   resource_suffix     = var.resource_suffix
+}
+  
+# networking resources take time to transition to created state.
+resource "time_sleep" "network_creation" {
+  create_duration = "60s"
+
+  triggers = {
+    subnet_id  = module.networking.k8s_subnet_id
+  }
 }
 
 module "acr" {
   source              = "./acr"
   location            = var.location
-  resource_group_name = azurerm_resource_group.shared_rg.name
-  subnet_id           = module.networking.k8s_subnet_id
+  resource_group_name = var.resource_group_name
+  subnet_id           = time_sleep.network_creation.triggers["subnet_id"]
   resource_suffix     = var.resource_suffix
 }
 
 module "kv" {
   source              = "./kv"
   location            = var.location
-  resource_group_name = azurerm_resource_group.shared_rg.name
-  k8s_subnet_id       = module.networking.k8s_subnet_id
+  resource_group_name = var.resource_group_name
+  k8s_subnet_id       = time_sleep.network_creation.triggers["subnet_id"]
   resource_suffix     = var.resource_suffix
   tenant_id           = var.tenant_id
 }

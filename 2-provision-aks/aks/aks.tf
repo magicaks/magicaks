@@ -63,11 +63,11 @@ resource "azurerm_kubernetes_cluster" "k8s_cluster" {
 
     # Download admin credentials locally
     provisioner "local-exec" {
-        command = "${path.cwd}/getcreds.sh ${self.resource_group_name} ${self.name}"
+        command = "${path.cwd}/2-provision-aks/getcreds.sh ${self.resource_group_name} ${self.name}"
     }
 
     # Setup Azure Policy integration
     provisioner "local-exec" {
-        command = "${path.cwd}/azurepolicy.sh ${self.name} ${self.resource_group_name}"
+        command = "${path.cwd}/2-provision-aks/azurepolicy.sh ${self.name} ${self.resource_group_name}"
     }
 }
