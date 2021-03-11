@@ -317,7 +317,7 @@ To remove all the resources you can either run the ```terraform destroy``` comma
 
 Sometimes timing issues may cause the terraform destroy not to complete in time, or fail. Re-running the destroy script will in most cases result in deletion of the resources.
 
-Notice that the destroy script relies on existing resources from which the environment was provisioned (for example .env file, kube.config, etc.). If you are trying to run the terraform destoy from a blank environment, or you don't have access to the original values, you might need to manualy delete the resources. In that case you should:
+Notice that the destroy script relies on existing resources from which the environment was provisioned (for example .env file, kube.config, etc.). If you are trying to run the terraform destroy from a blank environment, or you don't have access to the original values, you might need to manually delete the resources. In that case you should:
 
 * remove resource groups provisioned by terraform
 * remove service principals and groups provisioned by scripts
