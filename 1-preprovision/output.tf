@@ -14,6 +14,6 @@ output "aci_subnet_id" {
     value = module.networking.aci_subnet_id
 }
 
-output "aci_network_profile" {
+output "aci_network_profile_id" {
     value = module.networking.aci_network_profile_id
 }
