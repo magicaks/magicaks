@@ -166,16 +166,16 @@ Terraform stores state configuration in Azure Storage.
    source .env
    ```
 
-After this section you should have the following resources:
+After this section you should have the following resources created:
 
-* a **magicaksadmins** Azure AD group
-* a **magicaks-terraform** Service Principal for provisioning resources
-* a **magicaks-grafana** Service Principal for operating Grafana
-* azure storage for terraform state
-  * Resource group: **rg-terraform-state**
-    * Storage account: **tfstate[random]**
-      * Container: **tfstate**
-* environment variables set - for running the terraform scripts
+* Azure AD group called `magicaksadmins`
+* Service principal, `magicaks-terraform`, for provisioning resources
+* Service principal, `magicaks-grafana`, for operating Grafana
+* Azure storage for Terraform state
+  * Resource group: `rg-terraform-state`
+    * Storage account: `tfstate[random]`
+      * Storage container: `tfstate`
+* Environment variables set for running the Terraform scripts
 
 ## Prepare to provision resources with Terraform
 
