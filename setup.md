@@ -346,7 +346,7 @@ After this section you should have the following resources: [given the the defau
   * Help Release: **flux-workloads** for repository **k8sworkloads**
 * Resource group (created in previous step): **rg-mycluster**
   * Service bus namespace: **aks-mycluster-servicebus**
-* Key vault secrets:
+* Key Vault secrets:
   * servicebus-connectionstring
 
 ## What have we installed?
