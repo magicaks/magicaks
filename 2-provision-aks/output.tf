@@ -1,3 +1,0 @@
-output "fake" {
-  value = "fake"
-}
