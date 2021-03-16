@@ -41,7 +41,7 @@ module "preprovision" {
 
 resource "null_resource" "buildgrafana" {
   provisioner "local-exec" {
-    command = "./buildgrafana.sh ${module.preprovision.acr_name} ${var.grafana_image_name}"
+    command = "./utils/grafana/buildonacr.sh ${module.preprovision.acr_name} ${var.grafana_image_name}"
   }
 }
 
