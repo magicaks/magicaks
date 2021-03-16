@@ -26,15 +26,10 @@ provider "github" {
 data "azurerm_subscription" "current" {
 }
 
-resource "azurerm_resource_group" "shared_rg" {
-  name     = var.resource_group_name
-  location = var.location
-}
-
 module "preprovision" {
   source              = "./1-preprovision"
   location            = var.location
-  resource_group_name = azurerm_resource_group.shared_rg.name
+  resource_group_name = var.resource_group_name
   resource_suffix     = var.resource_suffix
   tenant_id           = data.azurerm_subscription.current.tenant_id
 }
@@ -47,7 +42,7 @@ resource "null_resource" "buildgrafana" {
 
 data "azurerm_user_assigned_identity" "magicaksmsi" {
   name                = "magicaksmsi"
-  resource_group_name = azurerm_resource_group.shared_rg.name
+  resource_group_name = var.resource_group_name
 }
 
 # Create cluster only after a suitable delay

@@ -48,7 +48,7 @@ module flux {
 
 # Upload keys only after a suitable delay
 resource "time_sleep" "flux_admin" {
-  create_duration = "60s"
+  create_duration = "120s"
 
   triggers = {
     admin_namespace  = module.flux.admin_namespace
@@ -57,7 +57,7 @@ resource "time_sleep" "flux_admin" {
 
 # Upload keys only after a suitable delay
 resource "time_sleep" "flux_workloads" {
-  create_duration = "60s"
+  create_duration = "120s"
 
   triggers = {
     workload_namespace  = module.flux.workload_namespace

@@ -181,17 +181,17 @@ Terraform stores state configuration in Azure Storage.
 
 Create a resource group using
 
-``bash
+```bash
 az group create -l location -g shared_rg
-``
+```
 > **Note:** Change the location and name of shared resource group above.
 
 Create managed service identity(MSI) which is used for cluster creation by running the [script]("./utils/scripts/create-cluster-managed-identity.sh")
 
-``bash
+```bash
  ./utils/scripts/create-cluster-managed-identity.sh shared_rg
-``
-> **Note:** Changed shared_rg to the name which wa chosen in the previous step.
+```
+> **Note:** Change shared_rg to the name which was chosen in the previous step.
 
 > **Note:** MagicAKS is not creating a system assigned managed identity, due to current [limitations](https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#create-an-aks-cluster-with-managed-identities) of self-managed VNet and static IP address outside the MC_ resource group.
 
@@ -210,7 +210,7 @@ Create managed service identity(MSI) which is used for cluster creation by runni
     | monitoring_reader_sp_client_id | Grafana service principal ID | From the "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step | |
     | monitoring_reader_sp_client_secret | Grafana service principal password | From the "[Create service principals](#4.-create-service-principals-for-provisioning-resources)" step | |    
 
-1. Execute the Terraform scripts to provision the resources (from the [1-preprovision](./1-preprovision/) folder):
+1. Execute the Terraform scripts to provision the resources:
 
     ```bash
     terraform init
