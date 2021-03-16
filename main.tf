@@ -81,27 +81,3 @@ module "provision-cluster" {
 
   depends_on = [ module.preprovision ]
 }
-
-# Create workloads only after a suitable delay
-# resource "time_sleep" "wait_for_cluster" {
-#   create_duration = "100s"
-#   triggers = {
-#     fake  = module.provision-cluster.fake
-#   }
-# }
-
-# module "postprovision" {
-#   source = "./3-postprovision"
-#   cluster_name = var.cluster_name
-#   location = var.location
-
-#   github_pat = var.github_pat
-#   github_user = var.github_user
-
-#   k8s_manifest_repo = var.k8s_manifest_repo
-#   k8s_workload_repo = var.k8s_workload_repo
-
-#   key_vault_id = module.preprovision.key_vault_id
-#   app_name = var.app_name
-#   fake = time_sleep.wait_for_cluster.triggers["fake"]
-# }
