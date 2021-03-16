@@ -169,8 +169,8 @@ Terraform stores state configuration in Azure Storage.
 After this section you should have the following resources created:
 
 * Azure AD group called `magicaksadmins`
-* Service principal, `magicaks-terraform`, for provisioning resources
-* Service principal, `magicaks-grafana`, for operating Grafana
+* Service principal: `magicaks-terraform`, for provisioning resources
+* Service principal: `magicaks-grafana`, for operating Grafana
 * Azure storage for Terraform state
   * Resource group: `rg-terraform-state`
     * Storage account: `tfstate[random]`
@@ -213,22 +213,22 @@ Before we provision the AKS clusters, we will provision some common resources th
 
 After provisioning the resources take note of the Terraform output variables, you will be using them in upcoming steps.
 
-After this section you should have the following resources: [given the resource_group_name **rg-magicaks-shared** and the resource_suffix: **magic123**]
+After this section you should have the following resources: [given the resource_group_name `rg-magicaks-shared` and the resource_suffix: `magic123`]
 
-* Resource group: **rg-magicaks-shared**
-  * Container registry: **acrmagic123**
-  * Firewall: **fwmagic123**
-  * Key vault: **kv-magic123**
-  * Public IP (for firewall): **pip-firewall**
-  * Route table (for firewall and internet): **subnet-route-table**
-  * Virtual network: **vnet-magicaks**
-    * Subnet (for kubernetes): **snet-k8s**
-    * Subnet (for container instances): **snet-aci**
-    * Subnet: **snet-adhoc**
-    * Subnet (for firewall): **AzureFirewallSubnet**
+* Resource group: `rg-magicaks-shared`
+  * Container registry: `acrmagic123`
+  * Firewall: `fwmagic123`
+  * Key vault: `kv-magic123`
+  * Public IP (for firewall): `pip-firewall`
+  * Route table (for firewall and internet): `subnet-route-table`
+  * Virtual network: `vnet-magicaks`
+    * Subnet (for kubernetes): `snet-k8s`
+    * Subnet (for container instances): `snet-aci`
+    * Subnet: `snet-adhoc`
+    * Subnet (for firewall): `AzureFirewallSubnet`
 * Key vault secrets (for the container registry):
-  * adminuser
-  * adminpassword
+  * `adminuser`
+  * `adminpassword`
 
 ## Provision an AKS cluster
 
@@ -257,7 +257,7 @@ After this section you should have the following resources: [given the resource_
 
     | Variable | Description | Where do I find this | Example |
     | -- | -- | -- | -- |
-    | cluster_name | A unique string used to for resources that need globally unique names. Keep this short and without dashes to fulfill [Azure naming requirements](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules) | You choose | "magic123" |
+    | cluster_name | A unique string used to for resources that need globally unique names. Keep this short and without dashes to fulfill [Azure naming requirements](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules) | You choose | "mycluster" |
     | location | The location where to create the resources | You choose | "westeurope" |
     | subscription_id | Your Azure subscription ID | | |
     | tenant_id | The Azure tenant ID for the tenant where the resources should be created | [How to find](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant) | | |
@@ -286,30 +286,30 @@ After this section you should have the following resources: [given the resource_
 
     Along with provisioning the cluster, the Terraform script will also download the credentials we need for the following steps for interacting with the cluster. It will also create a Grafana instance and connects it to the Log Analytics workspace as well as Postgres, which acts as the storage backend for Grafana.
 
-After this section you should have the following resources: [given the cluster_name **mycluster**]
+After this section you should have the following resources: [given the cluster_name `mycluster`]
 
 * Custom grafana image
-* Resource group (created in previous step): **rg-magicaks-shared**
-  * Managed Identity (for cluster): **magicaksmsi**
-* Resource group: **rg-mycluster**
-  * Kubernetes Service: **aks-mycluster**
-    * **magicaksadmin** admin user
+* Resource group (created in previous step): `rg-magicaks-shared`
+  * Managed Identity (for cluster): `magicaksmsi`
+* Resource group: `rg-mycluster`
+  * Kubernetes Service: `aks-mycluster`
+    * `magicaksadmin` admin user
     * connected to the log analytics workspace
-    * configured with **rg-mycluster-node** as the node resource group
-  * Log analytics workspace: **k8sLogAnalyticsWorkspace-[random]**
-  * Log analytics solution: **ContainerInsights**
-  * Container instances: **grafana**
-  * Postgres server (for grafana): **psql-mycluster**
-    * Postgres database: **grafana**
+    * configured with `rg-mycluster-node` as the node resource group
+  * Log analytics workspace: `k8sLogAnalyticsWorkspace-[random]`
+  * Log analytics solution: `ContainerInsights`
+  * Container instances: `grafana`
+  * Postgres server (for grafana): `psql-mycluster`
+    * Postgres database: `grafana`
 * Key Vault [Get] access granted to the cluster kubelet identity
-* Resource group: **rg-mycluster-node**
-  * Network security group: **aks-agentpool-[random]-nsg**
-  * Virtual Machine Scale Set: **aks-agentpool-[random]-vmss**
-  * Managed Identity: **aks-mycluster-agentpool**
-  * Managed Identity: **azurepolicy-aks-mycluster**
-  * Managed Identity: **omsagent-aks-mycluster**
-  * Public IP address: **[random]**
-  * Load Balancer: **kubernetes**
+* Resource group: `rg-mycluster-node`
+  * Network security group: `aks-agentpool-[random]-nsg`
+  * Virtual Machine Scale Set: `aks-agentpool-[random]-vmss`
+  * Managed Identity: `aks-mycluster-agentpool`
+  * Managed Identity: `azurepolicy-aks-mycluster`
+  * Managed Identity: `omsagent-aks-mycluster`
+  * Public IP address: `[random]`
+  * Load Balancer: `kubernetes`
 
 ## Provision support resources
 
@@ -320,8 +320,8 @@ This will set up Flux for admin and non-admin workloads and apply the desired st
 1. Fill out the Terraform parameters in [3-postprovision/terraform.tfvars.tmpl](3-postprovision/terraform.tfvars.tmpl) and save it without the `.tmpl` filename postfix.
 
     | Variable | Description | Example |
-    | -- | -- | -- | -- |
-    | cluster_name | Same cluster_name as in 2-provision-aks | "magic123" |
+    | -- | -- | -- |
+    | cluster_name | Same cluster_name as in 2-provision-aks | "mycluster" |
     | location | Same location as in 2-provision-aks | "westeurope" |
     | key_vault_id | Same key_vault_id as in 2-provision-aks | |
     | app_name | The kubernetes app namespace, this will be "app1" unless you changed it in the fabrikate-defs setup steps | "app1" |
