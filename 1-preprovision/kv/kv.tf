@@ -9,7 +9,6 @@ resource "azurerm_key_vault" "key_vault" {
   enabled_for_disk_encryption     = true
   enabled_for_template_deployment = true
 
-  # TODO check and confirm the iffyness of this block!
   network_acls {
     bypass                      = "AzureServices"
     default_action              = "Allow"
