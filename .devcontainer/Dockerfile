@@ -7,8 +7,7 @@ WORKDIR /root/
 RUN apt-get update && \
     apt-get install -y curl && \
     apt-get install -y git && \
-    apt-get install -u unzip && \
-    apt-get install jq 
+    apt-get install -u unzip
 
 # Tool - Azure CLI
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash 
