@@ -7,6 +7,7 @@ WORKDIR /root/
 RUN apt-get update && \
     apt-get install -y curl && \
     apt-get install -y git && \
+    apt-get install -y jq && \
     apt-get install -u unzip
 
 # Tool - Azure CLI
