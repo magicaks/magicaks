@@ -6,9 +6,11 @@ If you run into issues, check the [Troubleshooting](#Troubleshooting) section.
 
 ## Software requirements
 
-We have tested this repo with OSX, Linux and Windows (on [WSL2](https://docs.microsoft.com/en-us/windows/wsl/)).
+You can run the scripts locally or use the [development container](https://code.visualstudio.com/docs/remote/containers#_quick-start-open-an-existing-folder-in-a-container).  We have tested this repo with OSX, Linux and Windows (on [WSL2](https://docs.microsoft.com/en-us/windows/wsl/)).
 
-You need to install:
+
+To run locally, the following prerequisites are required to be installed:
+
 
 * [curl](https://curl.se/)
 * [fluxctl](https://docs.fluxcd.io/en/1.18.0/references/fluxctl.html)
@@ -25,8 +27,6 @@ You need to install:
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) with a user with permissions to provision resources in Azure and manage [Azure Active Directory (AAD)](https://azure.microsoft.com/en-us/services/active-directory/).
 * [Terraform](https://www.terraform.io/downloads.html) (tested with version 0.14.2)
 * [jq](https://stedolan.github.io/jq/)
-
-You can also use this [Docker dev container](./utils/docker-dev-env/README.md), if you don't want to install the tools in your native environment, but note that there can be additional considerations using the Docker development environment that are not covered by this guide.
 
 **Optional:** Run `./utils/scripts/verify-prerequisites.sh` to verify that you have installed all pre-requisites for MagicAKS.
 
