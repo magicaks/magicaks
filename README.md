@@ -30,7 +30,7 @@ The architecture includes the following components:
 * [Azure Key Vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) for secret storage
 * [Azure Policy](https://docs.microsoft.com/en-us/azure/governance/policy/overview) for policy enforcement, compliance and governance (Done)
 
-This high-level network architecture diagram shows how components are placed inside of the VNET Subnets. The firewall provides ingress and egress control, with few pre-set FQDNs, that can be adjusted in [networking.tf](./1-pre-provision/networking/networking.tf)
+This high-level network architecture diagram shows how components are placed inside of the VNET Subnets. The firewall provides ingress and egress control, with few pre-set FQDNs, that can be adjusted in [networking.tf](1-preprovision/networking/networking.tf)
 
 ![Architecture](docs/images/architecture.png "Architecture")
 
